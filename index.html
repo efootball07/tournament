@@ -71,12 +71,26 @@ button { font-family: var(--font-body); cursor: pointer; }
 input { font-family: var(--font-body); }
 
 /* ── BACKGROUND TEXTURE ── */
-body::after {
-  content: '';
+/* ── FOOTBALL BACKGROUND ── */
+/* ── FOOTBALL BACKGROUND ── */
+.tab-bg {
   position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.tab-bg.active { opacity: 1; }
+
+/* Pitch grid overlay on top of images */
+.tab-bg::after {
+  content: '';
+  position: absolute; inset: 0;
   background:
-    radial-gradient(ellipse 60% 40% at 15% 10%, rgba(45,107,255,0.06) 0%, transparent 70%),
-    radial-gradient(ellipse 50% 50% at 85% 80%, rgba(224,32,68,0.05) 0%, transparent 70%);
+    linear-gradient(to bottom, rgba(8,9,13,0.45) 0%, rgba(8,9,13,0.75) 100%),
+    repeating-linear-gradient(0deg, transparent, transparent 58px, rgba(255,255,255,0.015) 58px, rgba(255,255,255,0.015) 60px),
+    repeating-linear-gradient(90deg, transparent, transparent 58px, rgba(255,255,255,0.015) 58px, rgba(255,255,255,0.015) 60px);
 }
 
 /* ── HEADER ── */
@@ -687,8 +701,13 @@ main { max-width: 660px; margin: 0 auto; padding: 24px 16px 80px; position: rela
     <button class="hdr-btn red" id="reset-btn" style="display:none" onclick="confirmReset()">↺ Reset</button>
   </div>
 </header>
-
+<div id="bg-table"   class="tab-bg active"></div>
+<div id="bg-matches" class="tab-bg"></div>
+<div id="bg-final"   class="tab-bg"></div>
+<div id="bg-players" class="tab-bg"></div>
+<div id="bg-alltime" class="tab-bg"></div>
 <main>
+
 
   <!-- ══ SETUP SCREEN ══ -->
   <div id="scr-setup" class="screen active">
@@ -787,6 +806,33 @@ main { max-width: 660px; margin: 0 auto; padding: 24px 16px 80px; position: rela
 <div class="toast" id="toast"></div>
 
 <script>
+
+const SHUFFLE_IMAGES = [
+  'https://i.pinimg.com/1200x/95/88/94/9588944db036e73fcb75701d2fdd4a60.jpg',  // Messi
+  'https://i.pinimg.com/736x/57/df/f4/57dff4736b2dbdb94fcb08e5aa8d4766.jpg',  // Ronaldo
+  'https://wallpaperaccess.com/full/6505371.jpg',  // Neymar
+  'https://wallpaperaccess.com/full/7419173.jpg',  // add as many as you want
+  'https://i.pinimg.com/736x/63/19/24/631924016066d9d3165518e8afc06215.jpg',
+  'https://i.pinimg.com/736x/17/3f/94/173f947507e2c5ad21ce4c7c8afc5fd4.jpg',
+  
+    'https://i.pinimg.com/736x/10/36/e0/1036e0285a33e2328e3ea59e0bbecbd3.jpg',
+  'https://i.pinimg.com/736x/7b/7d/98/7b7d98f63fd1378b2707eaa9c4370b7e.jpg',
+    'https://i.pinimg.com/736x/b7/86/df/b786df2a599e4c2463a270df5a38ab07.jpg',
+  'https://i.pinimg.com/1200x/44/96/08/4496087c4223e45db7f4b02ca43954ea.jpg',
+    'https://i.pinimg.com/736x/ba/25/6d/ba256dcbd665561f302d3d6a5aff2a93.jpg',
+  'https://i.pinimg.com/736x/c5/65/02/c56502c69c2573069ecf5751792853ee.jpg',
+  
+   'https://i.pinimg.com/736x/79/cb/d7/79cbd7861083e9c3991b97b691b266da.jpg',
+  'https://i.pinimg.com/736x/44/1b/fc/441bfc6700af846cc9521e9093dc117f.jpg',
+    'https://i.pinimg.com/736x/6a/3f/12/6a3f12f48ff73d251ac05a60568478d6.jpg',
+  'https://i.pinimg.com/736x/de/c9/53/dec953e10225076a32d87e438a8d28d5.jpg',
+    'https://i.pinimg.com/1200x/03/66/b0/0366b072c3fb3afabaecda1acdfd69f1.jpg'
+];
+
+const ALLTIME_IMAGE = 'https://i.pinimg.com/736x/ff/84/38/ff84388dd849507b490cbeb15fe06442.jpg'; // trophy/alltime specific image
+
+let lastBgIndex = -1;
+
 /* ════════════════════════════════════════════════
    CONFIG
 ════════════════════════════════════════════════ */
@@ -1431,6 +1477,20 @@ function switchTab(name){
     document.getElementById('tp-'+t).classList.toggle('on',t===name);
     document.getElementById('tb-'+t).classList.toggle('on',t===name);
   });
+
+  if(name === 'alltime'){
+    document.querySelectorAll('.tab-bg').forEach(el => el.classList.remove('active'));
+    const bg = document.getElementById('bg-alltime');
+    if(bg){ bg.style.backgroundImage = `url('${ALLTIME_IMAGE}')`; bg.classList.add('active'); }
+  } else {
+    // Pick random image, never repeat same one twice
+    let pool = SHUFFLE_IMAGES.map((url,i) => i).filter(i => i !== lastBgIndex);
+    const pick = pool[Math.floor(Math.random() * pool.length)];
+    lastBgIndex = pick;
+    document.querySelectorAll('.tab-bg').forEach(el => el.classList.remove('active'));
+    const bg = document.getElementById('bg-table'); // reuse one div for shuffled
+    if(bg){ bg.style.backgroundImage = `url('${SHUFFLE_IMAGES[pick]}')`; bg.classList.add('active'); }
+  }
 }
 
 /* ════════════════════════════════════════════════
