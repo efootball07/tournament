@@ -505,7 +505,48 @@
   </main>
 
 <script>
+
+  const BIN_ID = "6a19695c21f9ee59d299179f";
+const API_KEY = "$2a$10$hHNJwr0zLsTYIAzcGRQeHOg/HVqfWziMgmmiQ5H1k3PIeqol69Y.m";
+
+
 let state = { players: [], matches: [], finalMatch: null, phase: 'setup' };
+
+
+
+
+
+
+async function loadState() {
+  const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+    headers: {
+      "X-Master-Key": API_KEY
+    }
+  });
+
+  const data = await res.json();
+  return data.record;
+}
+
+async function saveState() {
+  await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Master-Key": API_KEY
+    },
+    body: JSON.stringify(state)
+  });
+}
+
+
+
+
+
+
+
+
+
 
 const AV_COLORS = [
   { bg:'rgba(0,99,200,0.2)', fg:'#6AADFF' },
@@ -551,9 +592,15 @@ function startTournament() {
     return;
   }
   state.players = names.map((name, i) => ({ name, idx: i }));
-  state.matches = generateMatches(3);
-  state.finalMatch = null;
-  state.phase = 'group';
+state.matches = generateMatches(3);
+state.finalMatch = null;
+state.phase = 'group';
+
+saveState();
+
+
+
+
   document.getElementById('screen-setup').classList.remove('active');
   document.getElementById('screen-main').classList.add('active');
   document.getElementById('reset-btn').style.display = 'block';
@@ -639,12 +686,14 @@ function saveMatch(id) {
   const m = state.matches.find(x => x.id === id);
   m.homeScore = hs; m.awayScore = as;
   renderAll();
+  saveState();
 }
 
 function editMatch(id) {
   const m = state.matches.find(x => x.id === id);
   m.homeScore = null; m.awayScore = null;
   renderAll(); showTab('matches');
+  saveState();
 }
 
 function renderFinal() {
@@ -701,11 +750,13 @@ function saveFinal() {
   if (isNaN(s1)||isNaN(s2)||s1<0||s2<0) { alert('Enter valid scores!'); return; }
   state.finalMatch.homeScore = s1; state.finalMatch.awayScore = s2;
   renderAll();
+  saveState();
 }
 
 function editFinal() {
   state.finalMatch.homeScore = null; state.finalMatch.awayScore = null;
   renderAll();
+  saveState();
 }
 
 function renderProfiles() {
@@ -815,7 +866,24 @@ function resetApp() {
   document.getElementById('reset-btn').style.display = 'none';
   ['p1','p2','p3'].forEach(id => document.getElementById(id).value = '');
   showTab('table');
+  saveState();
 }
+
+window.onload = async function () {
+  try {
+    const remoteState = await loadState();
+    if (remoteState) state = remoteState;
+  } catch (e) {
+    console.log("No saved data yet");
+  }
+
+  if (state.players && state.players.length === 3) {
+    document.getElementById('screen-setup').classList.remove('active');
+    document.getElementById('screen-main').classList.add('active');
+    document.getElementById('reset-btn').style.display = 'block';
+    renderAll();
+  }
+};
 </script>
 </body>
 </html>
