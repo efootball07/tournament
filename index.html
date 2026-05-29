@@ -238,6 +238,16 @@ main { max-width: 660px; margin: 0 auto; padding: 24px 16px 80px; position: rela
 .start-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 32px rgba(45,107,255,0.28); }
 .start-btn:active { transform: translateY(0); }
 
+.view-btn {
+  width: 100%; height: 44px; margin-top: 10px;
+  background: transparent; border: 1px solid var(--line2);
+  border-radius: var(--r); font-family: var(--font-display);
+  font-size: 15px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--t2);
+  transition: all .2s;
+}
+.view-btn:hover { border-color: var(--amber); color: var(--amber); }
+
 /* ════════════════════════════════
    MAIN APP SCREEN
    ════════════════════════════════ */
@@ -704,6 +714,7 @@ main { max-width: 660px; margin: 0 auto; padding: 24px 16px 80px; position: rela
 
     <div class="setup-err" id="setup-err">Please enter all player names with no duplicates.</div>
     <button class="start-btn" onclick="startTournament()">⚽ Generate Fixtures</button>
+<button class="view-btn" id="view-stats-btn" style="display:none;" onclick="viewStats()">📊 View Stats & Profiles</button>
   </div>
 
   <!-- ══ MAIN SCREEN ══ -->
@@ -898,6 +909,10 @@ function genMatches(n){
   return [...r1,...r2];
 }
 
+function viewStats(){
+  goMain();
+}
+
 function startTournament(){
   const names=[];
   for(let i=0;i<playerCount;i++){
@@ -937,6 +952,13 @@ function allDone(){ return T.matches.every(m=>m.homeScore!==null); }
    RENDER: TABLE
 ════════════════════════════════════════════════ */
 function renderTable(){
+  if(!T.players || T.players.length === 0){
+    document.getElementById('tbl-body').innerHTML =
+      `<tr><td colspan="10" style="text-align:center;padding:32px;color:var(--t3);font-size:13px;">
+        No active tournament. Go to Setup to generate fixtures.
+      </td></tr>`;
+    return;
+  }
   const st=standings(), done=allDone();
   document.getElementById('tbl-body').innerHTML=st.map((s,rank)=>{
     const fin=done&&rank<2;
@@ -955,6 +977,12 @@ function renderTable(){
    RENDER: MATCHES
 ════════════════════════════════════════════════ */
 function renderMatches(){
+if(!T.players || T.players.length === 0){
+  document.getElementById('matches-list').innerHTML =
+    `<div class="final-locked"><span class="lock">📋</span>
+    <p>No active tournament.<br>Go to Setup to generate fixtures.</p></div>`;
+  return;
+}
   const maxR=Math.max(...T.matches.map(m=>m.round),1);
   let html='';
   for(let r=1;r<=maxR;r++){
@@ -1014,6 +1042,12 @@ function editMatch(id){
    RENDER: FINAL
 ════════════════════════════════════════════════ */
 function renderFinal(){
+if(!T.players || T.players.length === 0){
+  document.getElementById('final-content').innerHTML =
+    `<div class="final-locked"><span class="lock">🏆</span>
+    <p>No active tournament.<br>Complete a group stage to unlock the final.</p></div>`;
+  return;
+}
   const el=document.getElementById('final-content');
   if(!allDone()){
     const done=T.matches.filter(m=>m.homeScore!==null).length;
@@ -1116,6 +1150,32 @@ function unfinalize(){}
    RENDER: PLAYERS
 ════════════════════════════════════════════════ */
 function renderPlayers(){
+if(!T.players || T.players.length === 0){
+  const allNames = Object.keys(AT.players);
+  if(!allNames.length){
+    document.getElementById('players-grid').innerHTML =
+      `<p style="text-align:center;color:var(--t3);padding:32px 0;">No player data yet.</p>`;
+    document.getElementById('player-detail').style.display='none';
+    return;
+  }
+  let html='<div class="profiles-grid">';
+  allNames.forEach((name,i)=>{
+    const at=AT.players[name]||{trophies:0};
+    const wr=at.matches>0?Math.round(at.wins/at.matches*100):0;
+    const tr='🏆'.repeat(Math.min(at.trophies||0,5))+(at.trophies>5?`+${at.trophies-5}`:'');
+    html+=`<div class="pro-card" onclick="openProfile('${name.replace(/'/g,"\\'")}')">
+      <div class="pro-av" style="background:${AV_BG[i%8]};color:${AV_FG[i%8]};">${ini(name)}</div>
+      <div class="pro-name">${name}</div>
+      <div class="pro-sub">${at.matches||0} matches · ${wr}% wins</div>
+      <div class="pro-troph">${tr||'—'}</div>
+    </div>`;
+  });
+  html+='</div>';
+  document.getElementById('players-grid').innerHTML=html;
+  document.getElementById('players-grid').style.display='';
+  document.getElementById('player-detail').style.display='none';
+  return;
+}
   const st=standings(), map={};
   st.forEach(s=>{ map[s.idx]=s; });
   let html='<div class="profiles-grid">';
@@ -1441,7 +1501,11 @@ window.onload=async function(){
     const name=decodeURIComponent(hash.slice(9));
     setTimeout(()=>openProfile(name),400);
   }
+  
   if(T.players&&T.players.length>0) goMain();
+  const hasData = Object.keys(AT.players).length > 0;
+  const vb = document.getElementById('view-stats-btn');
+  if(vb) vb.style.display = hasData ? 'block' : 'none';
 };
 </script>
 </body>
