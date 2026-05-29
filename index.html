@@ -335,7 +335,8 @@ main { max-width: 660px; margin: 0 auto; padding: 24px 16px 80px; position: rela
 
 .m-teams { display: flex; align-items: center; gap: 0; margin-bottom: 10px; }
 .m-team  { flex: 1; display: flex; align-items: center; gap: 9px; }
-.m-team.away { justify-content: flex-end; flex-direction: row-reverse; }
+.m-team.away { justify-content: flex-end; flex-direction: row; }
+.m-team.away .m-team-name { text-align: right; }
 .m-team-name { font-size: 13px; font-weight: 700; color: var(--t1); }
 .m-score-disp {
   font-family: var(--font-display); font-size: 30px; font-weight: 800;
@@ -348,7 +349,20 @@ main { max-width: 660px; margin: 0 auto; padding: 24px 16px 80px; position: rela
   min-width: 88px; text-align: center; flex-shrink: 0;
 }
 
-.m-score-entry { display: flex; align-items: center; gap: 8px; }
+.m-score-entry { 
+  display: flex; 
+  flex-direction: column;
+  align-items: center; 
+  gap: 10px; 
+}
+.m-score-entry > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.m-score-entry .btn-save {
+  width: 100%;
+}
 .m-score-entry input[type=number] {
   width: 50px; height: 40px;
   background: var(--ink3); border: 1px solid var(--line2);
@@ -634,11 +648,21 @@ main { max-width: 660px; margin: 0 auto; padding: 24px 16px 80px; position: rela
 @media (max-width: 460px) {
   .stat-grid.c4 { grid-template-columns: 1fr 1fr; }
   .setup-hero h1 { font-size: 54px; }
-  .stbl th:nth-child(6),
-  .stbl td:nth-child(6),
-  .stbl th:nth-child(7),
-  .stbl td:nth-child(7) { display: none; }
+
+  /* Horizontal scroll — show ALL columns */
+  .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .stbl { min-width: 480px; }
+
+  /* Tighter padding so columns breathe */
+  .stbl th, .stbl td { padding: 10px 7px; font-size: 11px; }
+
+  /* Keep player name readable */
+  .stbl td:nth-child(2) { min-width: 90px; }
+  .p-cell { gap: 6px; }
+  .p-cell span { font-size: 12px; }
+  .pts-n { font-size: 16px; }
 }
+
 </style>
 </head>
 <body>
@@ -755,7 +779,7 @@ main { max-width: 660px; margin: 0 auto; padding: 24px 16px 80px; position: rela
 /* ════════════════════════════════════════════════
    CONFIG
 ════════════════════════════════════════════════ */
-const BIN_ID  = "6a19709721f9ee59d2993104";
+const BIN_ID  = "6a197fac21f9ee59d2996d88";
 const API_KEY = "$2a$10$hHNJwr0zLsTYIAzcGRQeHOg/HVqfWziMgmmiQ5H1k3PIeqol69Y.m";
 
 /* ════════════════════════════════════════════════
@@ -958,9 +982,11 @@ function renderMatches(){
             <div class="m-team away">${av(m.away,aN)}<span class="m-team-name">${aN}</span></div>
           </div>
           <div class="m-score-entry">
-            <input type="number" id="hs${m.id}" min="0" max="99" placeholder="0">
-            <span class="score-sep">–</span>
-            <input type="number" id="as${m.id}" min="0" max="99" placeholder="0">
+            <div>
+              <input type="number" id="hs${m.id}" min="0" max="99" placeholder="0">
+              <span class="score-sep">–</span>
+              <input type="number" id="as${m.id}" min="0" max="99" placeholder="0">
+            </div>
             <button class="btn-save" onclick="saveMatch(${m.id})">Save</button>
           </div>
         </div>`;
