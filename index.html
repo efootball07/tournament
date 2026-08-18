@@ -190,6 +190,20 @@ main { max-width: 660px; margin: 0 auto; padding: 24px 16px 80px; position: rela
 }
 .s-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
 
+/* Tournament mode selector */
+.mode-wrap { margin-bottom: 28px; }
+.mode-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+.mode-card {
+  background:var(--ink2); border:1px solid var(--line2); border-radius:var(--r-lg);
+  padding:14px 12px; text-align:left; cursor:pointer; transition:all .18s;
+}
+.mode-card:hover { border-color:var(--line3); transform:translateY(-1px); }
+.mode-card.on { border-color:var(--amber); background:var(--amber-lo); box-shadow:0 0 18px var(--amber-md); }
+.mode-icon { font-size:22px; margin-bottom:7px; }
+.mode-title { font-family:var(--font-display); font-size:14px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--t1); }
+.mode-desc { font-size:10px; color:var(--t3); line-height:1.35; margin-top:3px; }
+.setup-helper { font-size:11px; color:var(--t3); margin-top:-18px; margin-bottom:18px; text-align:center; }
+
 /* Player count */
 .pcount-wrap { margin-bottom: 28px; }
 .pcount-row { display: flex; gap: 6px; }
@@ -441,6 +455,54 @@ main { max-width: 660px; margin: 0 auto; padding: 24px 16px 80px; position: rela
 .badge-d { background: var(--draw-lo); color: var(--draw); }
 .badge-l { background: var(--loss-lo); color: var(--loss); }
 
+
+/* ── KNOCKOUT BRACKET ── */
+.bracket-wrap {
+  background:var(--ink2); border:1px solid var(--line); border-radius:var(--r-lg);
+  padding:18px 14px 20px; margin-bottom:22px; overflow-x:auto;
+}
+.bracket-head { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; margin-bottom:16px; }
+.bracket-title { font-family:var(--font-display); font-size:16px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--t1); }
+.bracket-sub { font-size:10px; color:var(--t3); margin-top:3px; }
+.bracket-scroll { min-width:760px; }
+.bracket-grid { display:grid; grid-template-columns:repeat(4,minmax(170px,1fr)); gap:18px; align-items:start; }
+.bracket-col { min-width:0; }
+.bracket-round-name { font-family:var(--font-display); font-size:9px; font-weight:800; letter-spacing:1.8px; text-transform:uppercase; color:var(--t3); text-align:center; margin-bottom:10px; }
+.bracket-stack {
+  /* One exact vertical coordinate system is shared by every round. */
+  position:relative;
+  height:640px;
+  width:100%;
+}
+.bracket-slot {
+  position:absolute;
+  left:0;
+  width:100%;
+  transform:translateY(-50%);
+  min-width:0;
+}
+.bracket-slot .bracket-match {
+  width:100%;
+}
+.bracket-match { box-sizing:border-box; }
+.bracket-match { position:relative; background:var(--ink3); border:1px solid var(--line2); border-radius:9px; overflow:visible; box-shadow:0 3px 12px rgba(0,0,0,.12); }
+.bracket-match.live { border-color:var(--blue-md); }
+.bracket-match.done { border-color:var(--line2); }
+.bracket-team { display:flex; align-items:center; justify-content:space-between; gap:7px; padding:8px 9px; min-height:34px; font-size:11px; font-weight:700; color:var(--t2); }
+.bracket-team + .bracket-team { border-top:1px solid var(--line); }
+.bracket-team.winner { color:var(--t1); background:rgba(74,222,128,.055); }
+.bracket-team.tbd { color:var(--t3); font-weight:600; font-style:italic; }
+.bracket-team-left { display:flex; align-items:center; gap:6px; min-width:0; }
+.bracket-team-name { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.bracket-score { font-family:var(--font-display); font-size:15px; font-weight:800; color:var(--t1); min-width:18px; text-align:right; }
+.bracket-badge { font-size:7px; letter-spacing:.8px; text-transform:uppercase; color:var(--win); margin-left:2px; }
+.bracket-arrow { position:absolute; right:-15px; top:50%; transform:translateY(-50%); color:var(--line3); font-size:18px; z-index:2; }
+.bracket-col:last-child .bracket-arrow { display:none; }
+.bracket-note { font-size:10px; color:var(--t3); text-align:center; margin-top:12px; }
+@media(max-width:760px){
+  .bracket-wrap { margin-left:-2px; margin-right:-2px; }
+}
+
 /* ── FINAL TAB ── */
 .final-locked {
   background: var(--ink2); border: 1px solid var(--line);
@@ -688,6 +750,7 @@ main { max-width: 660px; margin: 0 auto; padding: 24px 16px 80px; position: rela
 
 /* ── RESPONSIVE ── */
 @media (max-width: 460px) {
+  .mode-grid { grid-template-columns:1fr; }
   .stat-grid.c4 { grid-template-columns: 1fr 1fr; }
   .setup-hero h1 { font-size: 54px; }
 
@@ -703,6 +766,494 @@ main { max-width: 660px; margin: 0 auto; padding: 24px 16px 80px; position: rela
   .p-cell { gap: 6px; }
   .p-cell span { font-size: 12px; }
   .pts-n { font-size: 16px; }
+}
+
+
+/* ── PHONE BRACKET: COMPACT / NO HORIZONTAL SCROLL ── */
+@media (max-width: 600px){
+  .bracket-wrap{
+    padding:12px 8px 14px;
+    margin-left:0;
+    margin-right:0;
+    border-radius:10px;
+  }
+
+  .bracket-head{
+    margin-bottom:10px;
+    gap:6px;
+  }
+
+  .bracket-title{ font-size:13px; letter-spacing:.7px; }
+  .bracket-sub{ font-size:8px; line-height:1.35; }
+
+  .bracket-scroll{
+    min-width:0;
+    width:100%;
+    overflow:visible;
+  }
+
+  .bracket-grid{
+    width:100%;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:6px;
+  }
+
+  .bracket-col{ min-width:0; }
+
+  .bracket-round-name{
+    font-size:7px;
+    letter-spacing:1px;
+    margin-bottom:7px;
+    white-space:nowrap;
+  }
+
+  .bracket-stack{
+    height:500px;
+    width:100%;
+  }
+
+  .bracket-match{
+    border-radius:6px;
+    box-shadow:0 2px 7px rgba(0,0,0,.12);
+  }
+
+  .bracket-team{
+    gap:2px;
+    padding:5px 5px;
+    min-height:25px;
+    font-size:8px;
+    line-height:1;
+  }
+
+  .bracket-team-left{
+    gap:3px;
+    min-width:0;
+  }
+
+  .bracket-team-left > div{
+    transform:scale(.72);
+    transform-origin:left center;
+    margin-right:-5px;
+  }
+
+  .bracket-team-name{
+    max-width:42px;
+    font-size:8px;
+  }
+
+  .bracket-score{
+    font-size:10px;
+    min-width:11px;
+  }
+
+  .bracket-badge{
+    font-size:5px;
+    letter-spacing:.3px;
+  }
+
+  .bracket-arrow{
+    right:-6px;
+    font-size:11px;
+  }
+
+  .bracket-note{
+    font-size:8px;
+  }
+
+  /* Group mode has only SF + Final, so make those columns wider. */
+  .bracket-grid:has(.bracket-col:nth-child(3):last-child){
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+  }
+
+  .bracket-grid:has(.bracket-col:nth-child(3):last-child) .bracket-stack{
+    height:300px;
+  }
+
+  .bracket-grid:has(.bracket-col:nth-child(3):last-child) .bracket-team-name{
+    max-width:80px;
+    font-size:9px;
+  }
+
+  .bracket-grid:has(.bracket-col:nth-child(3):last-child) .bracket-team{
+    min-height:29px;
+    padding:6px;
+    font-size:9px;
+  }
+
+  .bracket-grid:has(.bracket-col:nth-child(3):last-child) .bracket-score{
+    font-size:12px;
+  }
+}
+
+@media (max-width:380px){
+  .bracket-wrap{ padding-left:6px; padding-right:6px; }
+  .bracket-grid{ gap:4px; }
+  .bracket-round-name{ font-size:6px; letter-spacing:.7px; }
+  .bracket-team{ padding-left:4px; padding-right:4px; }
+  .bracket-team-name{ max-width:34px; }
+  .bracket-stack{ height:470px; }
+}
+
+
+
+/* ============================================================
+   FULL SITE — PHONE OPTIMIZATION
+   ============================================================ */
+@media (max-width:700px){
+
+  html, body{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    overflow-x:hidden;
+  }
+
+  body{
+    font-size:14px;
+  }
+
+  *, *::before, *::after{
+    box-sizing:border-box;
+  }
+
+  /* Main shell / pages */
+  .shell,
+  .app,
+  .container,
+  main,
+  .page,
+  .content,
+  .wrap{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+  }
+
+  .shell{
+    padding-left:10px !important;
+    padding-right:10px !important;
+  }
+
+  /* Header */
+  header,
+  .topbar,
+  .navbar,
+  .nav,
+  .header{
+    max-width:100% !important;
+    min-width:0 !important;
+  }
+
+  .topbar, .navbar, header{
+    padding-left:10px !important;
+    padding-right:10px !important;
+  }
+
+  /* Hide secondary desktop-only controls when space is tight. */
+  .desktop-only{ display:none !important; }
+
+  /* Cards and panels */
+  .card,
+  .panel,
+  .section,
+  .box,
+  .stat-card,
+  .mode-card,
+  .setup-card,
+  .table-card{
+    max-width:100% !important;
+    min-width:0 !important;
+  }
+
+  /* Generic grids become one column unless specifically overridden. */
+  .stats-grid,
+  .dashboard-grid,
+  .cards-grid,
+  .mode-grid{
+    grid-template-columns:1fr !important;
+    width:100% !important;
+  }
+
+  /* Two-column content becomes stacked. */
+  .two-col,
+  .content-grid,
+  .main-grid,
+  .split-grid{
+    grid-template-columns:1fr !important;
+  }
+
+  /* Setup */
+  .setup,
+  .setup-panel,
+  .setup-content{
+    width:100% !important;
+    min-width:0 !important;
+  }
+
+  .mode-card{
+    width:100% !important;
+  }
+
+  .mode-row,
+  .mode-cards{
+    grid-template-columns:1fr !important;
+  }
+
+  .player-count,
+  #pcount-row{
+    display:flex !important;
+    flex-wrap:wrap !important;
+    gap:6px !important;
+  }
+
+  .pc-btn{
+    flex:1 0 42px;
+    min-width:42px;
+  }
+
+  /* Forms */
+  input,
+  select,
+  textarea,
+  button{
+    max-width:100%;
+  }
+
+  input,
+  select,
+  textarea{
+    font-size:16px !important; /* prevents iOS zoom */
+  }
+
+  .form-row,
+  .input-row,
+  .setup-row{
+    grid-template-columns:1fr !important;
+    width:100% !important;
+  }
+
+  .primary-btn,
+  .start-btn,
+  .action-btn{
+    width:100% !important;
+  }
+
+  /* Tabs */
+  .tabs,
+  .tab-bar,
+  .nav-tabs{
+    width:100% !important;
+    overflow-x:auto !important;
+    scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .tabs::-webkit-scrollbar,
+  .tab-bar::-webkit-scrollbar,
+  .nav-tabs::-webkit-scrollbar{
+    display:none;
+  }
+
+  .tabs button,
+  .tab-bar button,
+  .nav-tabs button{
+    flex:1 0 auto;
+    min-width:70px;
+    white-space:nowrap;
+  }
+
+  /* Tables: fit important columns and allow controlled horizontal scroll
+     only inside the table, never across the whole page. */
+  .table-wrap,
+  .table-scroll,
+  .matches-table-wrap{
+    width:100% !important;
+    max-width:100% !important;
+    overflow-x:auto !important;
+    overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  table{
+    min-width:520px;
+  }
+
+  /* Match cards / lists */
+  .matches,
+  .match-list,
+  .match-grid{
+    width:100% !important;
+    min-width:0 !important;
+  }
+
+  .match-card{
+    width:100% !important;
+    min-width:0 !important;
+  }
+
+  /* Players / all-time panels */
+  .players-grid,
+  .player-grid,
+  .history-grid{
+    grid-template-columns:1fr !important;
+  }
+
+  .player-card,
+  .history-card{
+    width:100% !important;
+    min-width:0 !important;
+  }
+
+  /* Profile overlays */
+  .overlay,
+  .modal,
+  .profile-modal,
+  .modal-card{
+    max-width:calc(100vw - 20px) !important;
+    width:calc(100vw - 20px) !important;
+    min-width:0 !important;
+  }
+
+  /* Knockout bracket: compact full-width phone version */
+  .bracket-wrap{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    margin:0 !important;
+    padding:11px 7px 13px !important;
+    border-radius:10px !important;
+  }
+
+  .bracket-scroll{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    overflow:visible !important;
+  }
+
+  .bracket-grid{
+    width:100% !important;
+    min-width:0 !important;
+    grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+    gap:5px !important;
+  }
+
+  .bracket-stack{
+    height:500px !important;
+  }
+
+  .bracket-round-name{
+    font-size:6px !important;
+    letter-spacing:.7px !important;
+    margin-bottom:6px !important;
+  }
+
+  .bracket-team{
+    padding:5px 4px !important;
+    min-height:24px !important;
+    font-size:7px !important;
+  }
+
+  .bracket-team-name{
+    max-width:40px !important;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    font-size:7px !important;
+  }
+
+  .bracket-score{
+    font-size:9px !important;
+  }
+
+  /* Group mode: only SF + Final, so use two wider columns. */
+  .bracket-grid:has(.bracket-col:nth-child(2):last-child){
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:9px !important;
+  }
+
+  .bracket-grid:has(.bracket-col:nth-child(2):last-child) .bracket-stack{
+    height:310px !important;
+  }
+
+  .bracket-grid:has(.bracket-col:nth-child(2):last-child) .bracket-team-name{
+    max-width:90px !important;
+    font-size:8px !important;
+  }
+
+  /* Footer */
+  footer{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    padding-left:10px !important;
+    padding-right:10px !important;
+  }
+}
+
+@media (max-width:430px){
+  .shell{
+    padding-left:8px !important;
+    padding-right:8px !important;
+  }
+
+  .topbar, .navbar, header{
+    padding-left:8px !important;
+    padding-right:8px !important;
+  }
+
+  .pc-btn{
+    min-width:38px;
+  }
+
+  .bracket-wrap{
+    padding-left:5px !important;
+    padding-right:5px !important;
+  }
+
+  .bracket-grid{
+    gap:4px !important;
+  }
+
+  .bracket-stack{
+    height:470px !important;
+  }
+
+  .bracket-team-name{
+    max-width:32px !important;
+    font-size:6.5px !important;
+  }
+
+  .bracket-team{
+    padding-left:3px !important;
+    padding-right:3px !important;
+  }
+}
+
+@media (max-width:360px){
+  .shell{
+    padding-left:5px !important;
+    padding-right:5px !important;
+  }
+
+  .bracket-grid{
+    gap:3px !important;
+  }
+
+  .bracket-stack{
+    height:450px !important;
+  }
+
+  .bracket-team-name{
+    max-width:27px !important;
+    font-size:6px !important;
+  }
+
+  .bracket-team{
+    min-height:22px !important;
+    padding:4px 2px !important;
+  }
 }
 
 </style>
@@ -729,6 +1280,25 @@ main { max-width: 660px; margin: 0 auto; padding: 24px 16px 80px; position: rela
       <div class="setup-eyebrow">⚽ Tournament Manager</div>
       <h1>eFootball<br><em>Cup</em></h1>
       <p>Set up your tournament · Track live stats · Crown your champion</p>
+    </div>
+
+    <div class="mode-wrap">
+      <div class="s-label">Tournament Mode</div>
+      <div class="mode-grid" id="mode-grid">
+        <button type="button" class="mode-card on" data-mode="league" onclick="selectMode('league')">
+          <div class="mode-icon">🏟️</div><div class="mode-title">League</div>
+          <div class="mode-desc">Everyone plays everyone · points table</div>
+        </button>
+        <button type="button" class="mode-card" data-mode="knockout" onclick="selectMode('knockout')">
+          <div class="mode-icon">⚡</div><div class="mode-title">16 Player KO</div>
+          <div class="mode-desc">Round of 16 → QF → SF → Final</div>
+        </button>
+        <button type="button" class="mode-card" data-mode="groups" onclick="selectMode('groups')">
+          <div class="mode-icon">🏆</div><div class="mode-title">Group Tournament</div>
+          <div class="mode-desc">8 or 16 players · groups → knockout</div>
+        </button>
+      </div>
+      <div class="setup-helper" id="mode-helper">League mode supports the existing round-robin format.</div>
     </div>
 
     <div class="pcount-wrap">
@@ -777,7 +1347,7 @@ main { max-width: 660px; margin: 0 auto; padding: 24px 16px 80px; position: rela
           <tbody id="tbl-body"></tbody>
         </table>
       </div>
-      <p class="tbl-note">Top 2 advance to the final · Win = 3 pts · Draw = 1 pt</p>
+      <p class="tbl-note">Win = 3 pts · Draw = 1 pt · Knockout matches require a winner</p>
     </div>
 
     <!-- MATCHES -->
@@ -855,9 +1425,10 @@ function av(idx,name,sz=32){
 /* ════════════════════════════════════════════════
    STATE
 ════════════════════════════════════════════════ */
-let T  = { players:[], matches:[], finalMatch:null, phase:'setup', _fin:false };
+let T  = { players:[], matches:[], finalMatch:null, phase:'setup', _fin:false, mode:'league', groups:[], bracketRound:0 };
 let AT = { players:{}, history:[] };
 let playerCount = 3;
+let selectedMode = 'league';
 
 /* ════════════════════════════════════════════════
    REMOTE
@@ -882,19 +1453,37 @@ async function saveRemote(){
 /* ════════════════════════════════════════════════
    SETUP UI
 ════════════════════════════════════════════════ */
+function selectMode(mode){
+  selectedMode=mode;
+  document.querySelectorAll('.mode-card').forEach(b=>b.classList.toggle('on',b.dataset.mode===mode));
+  const helper=document.getElementById('mode-helper');
+  const row=document.getElementById('pcount-row');
+  if(mode==='league'){
+    helper.textContent='League mode supports the existing round-robin format.';
+  }else if(mode==='knockout'){
+    helper.textContent='16 players only · single-elimination bracket.';
+  }else{
+    helper.textContent='Choose 8 players (2 groups of 4) or 16 players (4 groups of 4). Top 2 from each group advance.';
+  }
+  buildSetup();
+}
+
 function buildSetup(){
-  /* player count buttons */
   const row=document.getElementById('pcount-row');
   row.innerHTML='';
-  for(let n=2;n<=8;n++){
+  let counts;
+  if(selectedMode==='knockout') counts=[16];
+  else if(selectedMode==='groups') counts=[8,16];
+  else counts=[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];
+  if(!counts.includes(playerCount)) playerCount=counts[0];
+  counts.forEach(n=>{
     const b=document.createElement('button');
     b.className='pc-btn'+(n===playerCount?' on':'');
     b.textContent=n;
     b.onclick=()=>{ playerCount=n; buildSetup(); };
     row.appendChild(b);
-  }
+  });
 
-  /* returning players */
   const names=Object.keys(AT.players);
   const rw=document.getElementById('returning-wrap');
   const rt=document.getElementById('r-tags');
@@ -907,13 +1496,11 @@ function buildSetup(){
       </span>`).join('');
   } else { rw.style.display='none'; }
 
-  /* inputs */
   const grid=document.getElementById('p-grid');
   grid.innerHTML='';
   for(let i=0;i<playerCount;i++){
     const d=document.createElement('div');
     d.className='p-card';
-    /* Pre-fill from PREDEFINED list */
     const pre=i<PREDEFINED.length?PREDEFINED[i]:'';
     d.innerHTML=`
       <div class="p-card-lbl">
@@ -934,36 +1521,163 @@ function fillSlot(name){
 /* ════════════════════════════════════════════════
    TOURNAMENT LOGIC
 ════════════════════════════════════════════════ */
-function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]; } return a; }
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1));[a[j],a[i]]=[a[i],a[j]]; } return a; }
 
 function genMatches(n){
   const pairs=[];
   for(let i=0;i<n;i++) for(let j=i+1;j<n;j++) pairs.push([i,j]);
   shuffle(pairs);
   let id=0;
-  const r1=pairs.map(p=>({id:id++,round:1,home:p[0],away:p[1],homeScore:null,awayScore:null}));
-  const r2=pairs.map(p=>({id:id++,round:2,home:p[1],away:p[0],homeScore:null,awayScore:null}));
+  const r1=pairs.map(p=>({id:id++,round:1,stage:'league',home:p[0],away:p[1],homeScore:null,awayScore:null}));
+  const r2=pairs.map(p=>({id:id++,round:2,stage:'league',home:p[1],away:p[0],homeScore:null,awayScore:null}));
   return [...r1,...r2];
 }
 
-function viewStats(){
-  goMain();
+function genKnockoutRound(indices, roundNum){
+  let idBase=T.matches.reduce((m,x)=>Math.max(m,x.id+1),0);
+  const matches=[];
+  for(let i=0;i<indices.length;i+=2){
+    matches.push({id:idBase++,round:roundNum,stage:'knockout',home:indices[i],away:indices[i+1],homeScore:null,awayScore:null});
+  }
+  T.matches.push(...matches);
+  T.bracketRound=roundNum;
+}
+
+function makeGroups(namesCount){
+  const groupCount=namesCount===16?4:2;
+  const arr=Array.from({length:groupCount},()=>[]);
+  const shuffled=[...Array(namesCount).keys()];
+  shuffle(shuffled);
+  shuffled.forEach((idx,i)=>arr[i%groupCount].push(idx));
+  return arr;
+}
+
+function genGroupMatches(groups){
+  let id=0, matches=[];
+  groups.forEach((group,g)=>{
+    const pairs=[];
+    for(let i=0;i<group.length;i++) for(let j=i+1;j<group.length;j++) pairs.push([group[i],group[j]]);
+    shuffle(pairs);
+    pairs.forEach(p=>matches.push({id:id++,round:g+1,stage:'group',group:g+1,home:p[0],away:p[1],homeScore:null,awayScore:null}));
+  });
+  return matches;
+}
+
+function groupStandings(group, matches=T.matches){
+  const s=group.map(i=>({idx:i,name:T.players[i].name,played:0,wins:0,draws:0,losses:0,gf:0,ga:0,pts:0}));
+  matches.filter(m=>m.stage==='group' && group.includes(m.home) && group.includes(m.away)).forEach(m=>{
+    if(m.homeScore===null)return;
+    const h=s.find(x=>x.idx===m.home), a=s.find(x=>x.idx===m.away);
+    h.played++; a.played++; h.gf+=m.homeScore; h.ga+=m.awayScore; a.gf+=m.awayScore; a.ga+=m.homeScore;
+    if(m.homeScore>m.awayScore){h.wins++;h.pts+=3;a.losses++;}
+    else if(m.homeScore<m.awayScore){a.wins++;a.pts+=3;h.losses++;}
+    else{h.draws++;h.pts++;a.draws++;a.pts++;}
+  });
+  return s.sort((a,b)=>b.pts-a.pts||(b.gf-b.ga)-(a.gf-a.ga)||b.gf-a.gf);
+}
+
+function groupsDone(){
+  return T.matches.filter(m=>m.stage==='group').every(m=>m.homeScore!==null);
+}
+
+function knockoutRoundDone(){
+  const ms=T.matches.filter(m=>m.stage==='knockout' && m.round===T.bracketRound);
+  return ms.length>0 && ms.every(m=>m.homeScore!==null);
+}
+
+function winnerOf(m){
+  if(m.homeScore>m.awayScore) return m.home;
+  if(m.awayScore>m.homeScore) return m.away;
+  return null;
+}
+
+function advanceKnockout(){
+  if(T.mode==='knockout' || T.mode==='groups'){
+    if(!knockoutRoundDone()) return;
+    const current=T.matches.filter(m=>m.stage==='knockout' && m.round===T.bracketRound);
+    const winners=current.map(winnerOf);
+    if(current.length===1){
+      const m=current[0];
+      T.finalMatch={homeScore:m.homeScore,awayScore:m.awayScore,p1idx:m.home,p2idx:m.away,source:'knockout',matchId:m.id};
+      T.phase='final';
+      finalize();
+      return;
+    }
+    genKnockoutRound(winners,T.bracketRound+1);
+  }
+}
+
+function startGroupKnockout(){
+  const qualifiers=[];
+
+  if(T.players.length===8){
+    /* 8-player groups: 2 groups, top 2 from each = 4 semifinalists. */
+    T.groups.forEach(g=>{
+      const st=groupStandings(g);
+      qualifiers.push(st[0].idx,st[1].idx);
+    });
+  }else{
+    /* 16-player groups: 4 groups, group winners only = 4 semifinalists. */
+    T.groups.forEach(g=>{
+      const st=groupStandings(g);
+      qualifiers.push(st[0].idx);
+    });
+  }
+
+  /* Semifinal seeding:
+     2 groups: A1-B2, B1-A2
+     4 groups: A1-D1, B1-C1 */
+  let pairs=[];
+  if(qualifiers.length===4){
+    if(T.groups.length===2){
+      pairs=[
+        [qualifiers[0],qualifiers[3]],
+        [qualifiers[1],qualifiers[2]]
+      ];
+    }else{
+      pairs=[
+        [qualifiers[0],qualifiers[3]],
+        [qualifiers[1],qualifiers[2]]
+      ];
+    }
+  }
+
+  T.matches.push(...pairs.map((p,i)=>({
+    id:T.matches.length+i,
+    round:3,
+    stage:'knockout',
+    home:p[0],
+    away:p[1],
+    homeScore:null,
+    awayScore:null
+  })));
+
+  /* Group-stage knockout starts directly at the Semi-Finals. */
+  T.bracketRound=3;
+  T.phase='knockout';
 }
 
 function startTournament(){
   const names=[];
-  for(let i=0;i<playerCount;i++){
-    const v=(document.getElementById('pi'+i)?.value||'').trim();
-    names.push(v);
-  }
+  for(let i=0;i<playerCount;i++) names.push((document.getElementById('pi'+i)?.value||'').trim());
   const err=document.getElementById('setup-err');
-  if(names.some(n=>!n)||new Set(names).size!==names.length){
-    err.style.display='block'; return;
-  }
+  if(names.some(n=>!n)||new Set(names).size!==names.length){ err.style.display='block'; return; }
+  if(selectedMode==='knockout' && names.length!==16){ toast('⚠️ 16 Player KO requires exactly 16 players'); return; }
+  if(selectedMode==='groups' && ![8,16].includes(names.length)){ toast('⚠️ Group Tournament requires 8 or 16 players'); return; }
+
   err.style.display='none';
   T.players=names.map((name,i)=>({name,idx:i}));
-  T.matches=genMatches(names.length);
-  T.finalMatch=null; T.phase='group'; T._fin=false;
+  T.mode=selectedMode; T.groups=[]; T.finalMatch=null; T._fin=false; T.bracketRound=0;
+
+  if(selectedMode==='league'){
+    T.matches=genMatches(names.length); T.phase='group';
+  }else if(selectedMode==='knockout'){
+    T.matches=[]; T.phase='knockout'; genKnockoutRound([...Array(names.length).keys()],1);
+  }else{
+    T.groups=makeGroups(names.length);
+    T.matches=genGroupMatches(T.groups); T.phase='group';
+  }
+
   names.forEach(n=>{
     if(!AT.players[n]) AT.players[n]={trophies:0,goals:0,matches:0,wins:0,draws:0,losses:0,tourneys:0};
     AT.players[n].tourneys=(AT.players[n].tourneys||0)+1;
@@ -971,9 +1685,14 @@ function startTournament(){
   saveRemote(); goMain();
 }
 
+function viewStats(){
+  goMain();
+}
+
+
 function standings(){
   const s=T.players.map((p,i)=>({idx:i,name:p.name,played:0,wins:0,draws:0,losses:0,gf:0,ga:0,pts:0}));
-  T.matches.forEach(m=>{
+  T.matches.filter(m=>m.stage==='league'||m.stage==='group').forEach(m=>{
     if(m.homeScore===null) return;
     const h=s[m.home],a=s[m.away];
     h.played++;a.played++;h.gf+=m.homeScore;h.ga+=m.awayScore;a.gf+=m.awayScore;a.ga+=m.homeScore;
@@ -983,29 +1702,59 @@ function standings(){
   });
   return s.sort((a,b)=>b.pts-a.pts||(b.gf-b.ga)-(a.gf-a.ga)||b.gf-a.gf);
 }
-function allDone(){ return T.matches.every(m=>m.homeScore!==null); }
+
+function allDone(){
+  return T.matches.length>0 && T.matches.filter(m=>m.stage==='league'||m.stage==='group').every(m=>m.homeScore!==null);
+}
+function currentStageDone(){
+  if(T.mode==='league') return allDone();
+  if(T.phase==='group') return groupsDone();
+  if(T.phase==='knockout') return knockoutRoundDone();
+  return false;
+}
 
 /* ════════════════════════════════════════════════
    RENDER: TABLE
 ════════════════════════════════════════════════ */
 function renderTable(){
-  if(!T.players || T.players.length === 0){
-    document.getElementById('tbl-body').innerHTML =
-      `<tr><td colspan="10" style="text-align:center;padding:32px;color:var(--t3);font-size:13px;">
-        No active tournament. Go to Setup to generate fixtures.
-      </td></tr>`;
+  const el=document.getElementById('tbl-body');
+  if(!T.players || !T.players.length){
+    el.innerHTML=`<tr><td colspan="10" style="text-align:center;padding:32px;color:var(--t3);font-size:13px;">No active tournament. Go to Setup to generate fixtures.</td></tr>`;
+    return;
+  }
+  if(T.mode==='groups'){
+    let html='';
+    T.groups.forEach((g,gi)=>{
+      const st=groupStandings(g);
+      html+=`<tr><td colspan="10" style="text-align:left;padding:10px 12px;background:var(--ink3);font-family:var(--font-display);font-weight:800;letter-spacing:1.5px;color:var(--amber);">GROUP ${String.fromCharCode(65+gi)}</td></tr>`;
+      st.forEach((x,r)=>{
+        const gd=x.gf-x.ga;
+        html+=`<tr onclick="showPlayer(${x.idx})">
+          <td><span class="rank-n">${r+1}</span></td><td><div class="p-cell">${av(x.idx,x.name)}<span>${x.name}${r<2?'<span class="fin-badge">QUALIFY</span>':''}</span></div></td>
+          <td>${x.played}</td><td>${x.wins}</td><td>${x.draws}</td><td>${x.losses}</td>
+          <td>${x.gf}</td><td>${x.ga}</td><td>${gd>=0?'+':''}${gd}</td><td class="pts-n">${x.pts}</td>
+        </tr>`;
+      });
+    });
+    el.innerHTML=html;
+    return;
+  }
+  if(T.mode==='knockout'){
+    const active=T.matches.filter(m=>m.stage==='knockout'&&m.round===T.bracketRound);
+    const completed=T.matches.filter(m=>m.stage==='knockout'&&m.homeScore!==null).length;
+    el.innerHTML=`<tr><td colspan="10" style="padding:28px;text-align:center;">
+      <div style="font-family:var(--font-display);font-size:18px;font-weight:800;color:var(--t1);">${['','Round of 16','Quarter-Finals','Semi-Finals','Final'][T.bracketRound]||'Knockout'}</div>
+      <div style="color:var(--t3);margin-top:5px;">${completed} knockout matches completed · ${active.length} matches in current round</div>
+      <div style="margin-top:14px;color:var(--amber);font-size:12px;">Use the Matches tab to enter results.</div>
+    </td></tr>`;
     return;
   }
   const st=standings(), done=allDone();
-  document.getElementById('tbl-body').innerHTML=st.map((s,rank)=>{
-    const fin=done&&rank<2;
-    const gd=s.gf-s.ga;
-    return `<tr class="${fin?'finalist-row':''}" onclick="showPlayer(${s.idx})">
-      <td><span class="rank-n">${rank+1}</span></td>
-      <td><div class="p-cell">${av(s.idx,s.name)}<span>${s.name}${fin?'<span class="fin-badge">FINAL</span>':''}</span></div></td>
-      <td>${s.played}</td><td>${s.wins}</td><td>${s.draws}</td><td>${s.losses}</td>
-      <td>${s.gf}</td><td>${s.ga}</td><td>${gd>=0?'+':''}${gd}</td>
-      <td class="pts-n">${s.pts}</td>
+  el.innerHTML=st.map((x,rank)=>{
+    const fin=done&&rank<2, gd=x.gf-x.ga;
+    return `<tr class="${fin?'finalist-row':''}" onclick="showPlayer(${x.idx})">
+      <td><span class="rank-n">${rank+1}</span></td><td><div class="p-cell">${av(x.idx,x.name)}<span>${x.name}${fin?'<span class="fin-badge">FINAL</span>':''}</span></div></td>
+      <td>${x.played}</td><td>${x.wins}</td><td>${x.draws}</td><td>${x.losses}</td><td>${x.gf}</td><td>${x.ga}</td><td>${gd>=0?'+':''}${gd}</td><td class="pts-n">${x.pts}</td>
     </tr>`;
   }).join('');
 }
@@ -1013,65 +1762,154 @@ function renderTable(){
 /* ════════════════════════════════════════════════
    RENDER: MATCHES
 ════════════════════════════════════════════════ */
-function renderMatches(){
-if(!T.players || T.players.length === 0){
-  document.getElementById('matches-list').innerHTML =
-    `<div class="final-locked"><span class="lock">📋</span>
-    <p>No active tournament.<br>Go to Setup to generate fixtures.</p></div>`;
-  return;
+function knockoutLabel(round){
+  return ({1:'Round of 16',2:'Quarter-Finals',3:'Semi-Finals',4:'Final'}[round]||'Knockout');
 }
-  const maxR=Math.max(...T.matches.map(m=>m.round),1);
-  let html='';
-  for(let r=1;r<=maxR;r++){
-    html+=`<div class="r-label">Round ${r}</div>`;
-    T.matches.filter(m=>m.round===r).forEach(m=>{
-      const hN=T.players[m.home].name, aN=T.players[m.away].name;
-      if(m.homeScore!==null){
-        let bh='',ba='';
-        if(m.homeScore>m.awayScore){bh='<span class="badge badge-w">WIN</span>';ba='<span class="badge badge-l">LOSS</span>';}
-        else if(m.homeScore<m.awayScore){bh='<span class="badge badge-l">LOSS</span>';ba='<span class="badge badge-w">WIN</span>';}
-        else{bh='<span class="badge badge-d">DRAW</span>';ba='<span class="badge badge-d">DRAW</span>';}
-        html+=`<div class="m-card played">
-          <div class="m-teams">
+
+function bracketMatchCard(m){
+  const hName=m.home!=null&&T.players[m.home]?T.players[m.home].name:'TBD';
+  const aName=m.away!=null&&T.players[m.away]?T.players[m.away].name:'TBD';
+  const played=m.homeScore!==null && m.awayScore!==null;
+  const hw=played&&m.homeScore>m.awayScore, aw=played&&m.awayScore>m.homeScore;
+  const team=(idx,name,score,win)=>`<div class="bracket-team ${win?'winner':''} ${name==='TBD'?'tbd':''}">
+    <div class="bracket-team-left">${name==='TBD'?'':av(idx,name,22)}<span class="bracket-team-name">${name}</span>${win?'<span class="bracket-badge">WIN</span>':''}</div>
+    <span class="bracket-score">${played?score:'—'}</span>
+  </div>`;
+  return `<div class="bracket-match ${played?'done':'live'}">${team(m.home,hName,m.homeScore,hw)}${team(m.away,aName,m.awayScore,aw)}<span class="bracket-arrow">›</span></div>`;
+}
+
+function renderBracket(){
+  if(!T.players?.length || !['knockout','groups'].includes(T.mode)) return '';
+
+  const ko=T.matches.filter(m=>m.stage==='knockout');
+
+  if(T.mode==='groups' && !ko.length){
+    return `<div class="bracket-wrap">
+      <div class="bracket-head"><div>
+        <div class="bracket-title">Knockout Bracket</div>
+        <div class="bracket-sub">The bracket appears after every group-stage match is completed.</div>
+      </div></div>
+      <div class="bracket-note">Finish the group stage to generate the knockout draw.</div>
+    </div>`;
+  }
+
+  /* 16-player KO = 8/4/2/1.
+     8-player group KO = 4/2/1, so the empty R16 column is removed. */
+  const isGroups = T.mode==='groups';
+  const isEightPlayerGroups = isGroups && T.players.length===8;
+
+  /* Group tournaments always go directly to Semi-Finals -> Final.
+     Regular 16-player knockout keeps Round of 16 -> QF -> SF -> Final. */
+  const rounds = isGroups ? [3,4] : [1,2,3,4];
+  const counts = isGroups ? {3:2,4:1} : {1:8,2:4,3:2,4:1};
+
+  let html=`<div class="bracket-wrap">
+    <div class="bracket-head"><div>
+      <div class="bracket-title">${T.mode==='groups'?'Knockout Stage':'16 Player Knockout'}</div>
+      <div class="bracket-sub">Winners advance automatically · knockout matches cannot end in a draw</div>
+    </div></div>
+    <div class="bracket-scroll"><div class="bracket-grid">`;
+
+  rounds.forEach(r=>{
+    const ms=ko.filter(m=>m.round===r);
+    const total=Math.max(ms.length,counts[r]);
+    let cards='';
+
+    for(let i=0;i<total;i++){
+      const m=ms[i];
+      const card=m ? bracketMatchCard(m) :
+        `<div class="bracket-match">
+          <div class="bracket-team tbd"><div class="bracket-team-left"><span class="bracket-team-name">TBD</span></div><span class="bracket-score">—</span></div>
+          <div class="bracket-team tbd"><div class="bracket-team-left"><span class="bracket-team-name">TBD</span></div><span class="bracket-score">—</span></div>
+          ${r<4?'<span class="bracket-arrow">›</span>':''}
+        </div>`;
+
+      /* Exact center coordinates:
+         R16 = 35,105,175...; QF = 70,210...;
+         SF = 140,420; Final = 280. */
+      const roundIndex = rounds.indexOf(r);
+      const slotCount = counts[r];
+      const centerY = ((i + 0.5) / slotCount) * 100;
+      cards += `<div class="bracket-slot" style="top:${centerY}%">${card}</div>`;
+    }
+
+    html+=`<div class="bracket-col">
+      <div class="bracket-round-name">${knockoutLabel(r)}</div>
+      <div class="bracket-stack">${cards}</div>
+    </div>`;
+  });
+
+  html+=`</div></div></div>`;
+  return html;
+}
+
+function renderMatches(){
+  const el=document.getElementById('matches-list');
+  if(!T.players || !T.players.length){
+    el.innerHTML=`<div class="final-locked"><span class="lock">📋</span><p>No active tournament.<br>Go to Setup to generate fixtures.</p></div>`;
+    return;
+  }
+  let html=renderBracket();
+  const stages=[...new Set(T.matches.map(m=>m.stage||'league'))];
+  stages.forEach(stage=>{
+    const stageMatches=T.matches.filter(m=>(m.stage||'league')===stage);
+    const rounds=[...new Set(stageMatches.map(m=>m.round))].sort((a,b)=>a-b);
+    rounds.forEach(r=>{
+      const title=stage==='league'?`Round ${r}`:stage==='group'?`Group ${String.fromCharCode(64+r)} Matches`:knockoutLabel(r);
+      html+=`<div class="r-label">${title}</div>`;
+      stageMatches.filter(m=>m.round===r).forEach(m=>{
+        if(m.home===null||m.away===null) return;
+        const hN=T.players[m.home]?.name||'TBD', aN=T.players[m.away]?.name||'TBD';
+        const played=m.homeScore!==null;
+        if(played){
+          let bh='',ba='';
+          if(m.homeScore>m.awayScore){bh='<span class="badge badge-w">WIN</span>';ba='<span class="badge badge-l">LOSS</span>';}
+          else if(m.homeScore<m.awayScore){bh='<span class="badge badge-l">LOSS</span>';ba='<span class="badge badge-w">WIN</span>';}
+          else{bh='<span class="badge badge-d">DRAW</span>';ba='<span class="badge badge-d">DRAW</span>';}
+          html+=`<div class="m-card played"><div class="m-teams">
             <div class="m-team">${av(m.home,hN)}<div><div class="m-team-name">${hN}</div><div style="margin-top:4px;">${bh}</div></div></div>
             <div class="m-score-disp">${m.homeScore}&thinsp;–&thinsp;${m.awayScore}</div>
             <div class="m-team away">${av(m.away,aN)}<div style="text-align:right"><div class="m-team-name">${aN}</div><div style="margin-top:4px;">${ba}</div></div></div>
-          </div>
-          <button class="btn-edit" onclick="editMatch(${m.id})">✎ Edit</button>
-        </div>`;
-      } else {
-        html+=`<div class="m-card pending">
-          <div class="m-teams">
-            <div class="m-team">${av(m.home,hN)}<span class="m-team-name">${hN}</span></div>
-            <div class="m-vs">VS</div>
+          </div><button class="btn-edit" onclick="editMatch(${m.id})">✎ Edit</button></div>`;
+        }else{
+          html+=`<div class="m-card pending"><div class="m-teams">
+            <div class="m-team">${av(m.home,hN)}<span class="m-team-name">${hN}</span></div><div class="m-vs">VS</div>
             <div class="m-team away">${av(m.away,aN)}<span class="m-team-name">${aN}</span></div>
-          </div>
-          <div class="m-score-entry">
-            <div>
-              <input type="number" id="hs${m.id}" min="0" max="99" placeholder="0">
-              <span class="score-sep">–</span>
-              <input type="number" id="as${m.id}" min="0" max="99" placeholder="0">
-            </div>
-            <button class="btn-save" onclick="saveMatch(${m.id})">Save</button>
-          </div>
-        </div>`;
-      }
+          </div><div class="m-score-entry"><div>
+            <input type="number" id="hs${m.id}" min="0" max="99" placeholder="0"><span class="score-sep">–</span>
+            <input type="number" id="as${m.id}" min="0" max="99" placeholder="0"></div>
+            <button class="btn-save" onclick="saveMatch(${m.id})">Save</button></div></div>`;
+        }
+      });
     });
-  }
-  document.getElementById('matches-list').innerHTML=html;
+  });
+  if(!html) html=`<div class="final-locked"><span class="lock">⏳</span><p>Fixtures are waiting for the previous stage to finish.</p></div>`;
+  el.innerHTML=html;
 }
 
 function saveMatch(id){
-  const hs=parseInt(document.getElementById('hs'+id).value);
-  const as=parseInt(document.getElementById('as'+id).value);
+  const hs=parseInt(document.getElementById('hs'+id)?.value);
+  const as=parseInt(document.getElementById('as'+id)?.value);
   if(isNaN(hs)||isNaN(as)||hs<0||as<0){toast('⚠️ Enter valid scores');return;}
-  const m=T.matches.find(x=>x.id===id);
+  const m=T.matches.find(x=>x.id===id); if(!m)return;
+  if(m.stage==='knockout' && hs===as){toast('⚠️ Knockout matches cannot end in a draw');return;}
   m.homeScore=hs; m.awayScore=as;
+  if(m.stage==='group' && groupsDone()){
+    startGroupKnockout();
+  }else if(m.stage==='knockout'){
+    advanceKnockout();
+  }
   renderAll(); saveRemote();
 }
 function editMatch(id){
-  const m=T.matches.find(x=>x.id===id);
+  const m=T.matches.find(x=>x.id===id); if(!m)return;
   m.homeScore=null; m.awayScore=null;
+  // If editing a completed knockout round, remove later rounds so they can be regenerated.
+  if(m.stage==='knockout'){
+    const later=m.round;
+    T.matches=T.matches.filter(x=>x.stage!=='knockout'||x.round<=later);
+    T.bracketRound=later; T.phase='knockout'; T.finalMatch=null; T._fin=false;
+  }
   renderAll(); switchTab('matches'); saveRemote();
 }
 
@@ -1079,67 +1917,46 @@ function editMatch(id){
    RENDER: FINAL
 ════════════════════════════════════════════════ */
 function renderFinal(){
-if(!T.players || T.players.length === 0){
-  document.getElementById('final-content').innerHTML =
-    `<div class="final-locked"><span class="lock">🏆</span>
-    <p>No active tournament.<br>Complete a group stage to unlock the final.</p></div>`;
-  return;
-}
   const el=document.getElementById('final-content');
-  if(!allDone()){
-    const done=T.matches.filter(m=>m.homeScore!==null).length;
-    el.innerHTML=`<div class="final-locked">
-      <span class="lock">🔒</span>
-      <p>Complete all <strong style="color:var(--t1)">${T.matches.length}</strong> group stage matches to unlock the final.<br><br>
-      <strong style="color:var(--t1)">${done}&nbsp;/&nbsp;${T.matches.length}</strong> matches played.</p>
-    </div>`; return;
+  if(!T.players || !T.players.length){
+    el.innerHTML=`<div class="final-locked"><span class="lock">🏆</span><p>No active tournament.</p></div>`; return;
   }
-  const st=standings(), f1=st[0], f2=st[1];
-  if(!T.finalMatch) T.finalMatch={homeScore:null,awayScore:null,p1idx:f1.idx,p2idx:f2.idx};
-  const fm=T.finalMatch;
-
-  let html=`<div class="finalists-row">`;
-  [f1,f2].forEach((f,i)=>{
-    html+=`<div class="finalist-card">
-      <div class="fn-av" style="background:${AV_BG[f.idx%8]};color:${AV_FG[f.idx%8]};">${ini(f.name)}</div>
-      <div class="fn-name">${f.name}</div>
-      <div class="fn-sub">${f.pts} pts · ${i===0?'1st':'2nd'} place</div>
-    </div>`;
-  });
-  html+=`</div>`;
-
-  if(fm.homeScore!==null){
-    const champ=fm.homeScore>fm.awayScore?f1:fm.homeScore<fm.awayScore?f2:null;
-    html+=`<div class="champion-wrap">
-      <span class="champ-trophy">🏆</span>
-      ${champ
-        ? `<div class="champ-label">Champion</div><div class="champ-name">${champ.name}</div><div class="champ-score">Final · ${fm.homeScore} – ${fm.awayScore} · ${f1.name} vs ${f2.name}</div>`
-        : `<div class="champ-label">Draw</div><div class="champ-name" style="font-size:32px;">${f1.name} ${fm.homeScore}–${fm.awayScore} ${f2.name}</div>`
-      }
-    </div>
-    <button class="btn-edit" onclick="editFinal()">✎ Edit Final Result</button>`;
-  } else {
-    html+=`<div class="grand-final-card">
-      <div class="gf-label">⭐ Grand Final ⭐</div>
-      <div class="m-teams">
-        <div class="m-team">${av(f1.idx,f1.name,40)}<span class="m-team-name">${f1.name}</span></div>
-        <div class="m-vs">VS</div>
-        <div class="m-team away">${av(f2.idx,f2.name,40)}<span class="m-team-name">${f2.name}</span></div>
-      </div>
-      <div class="m-score-entry" style="margin-top:14px;">
-        <input type="number" id="fs1" min="0" max="99" placeholder="0">
-        <span class="score-sep">–</span>
-        <input type="number" id="fs2" min="0" max="99" placeholder="0">
-        <button class="btn-save" onclick="saveFinal()">Save</button>
-      </div>
-    </div>`;
+  if(T.mode==='league'){
+    if(!allDone()){
+      const done=T.matches.filter(m=>m.homeScore!==null).length;
+      el.innerHTML=`<div class="final-locked"><span class="lock">🔒</span><p>Complete all <strong style="color:var(--t1)">${T.matches.length}</strong> league matches.<br><br><strong style="color:var(--t1)">${done}/${T.matches.length}</strong> played.</p></div>`; return;
+    }
+    const st=standings(), f1=st[0], f2=st[1];
+    if(!T.finalMatch) T.finalMatch={homeScore:null,awayScore:null,p1idx:f1.idx,p2idx:f2.idx};
+    const fm=T.finalMatch;
+    let html=`<div class="finalists-row">${[f1,f2].map((f,i)=>`<div class="finalist-card"><div class="fn-av" style="background:${AV_BG[f.idx%8]};color:${AV_FG[f.idx%8]};">${ini(f.name)}</div><div class="fn-name">${f.name}</div><div class="fn-sub">${f.pts} pts · ${i===0?'1st':'2nd'} place</div></div>`).join('')}</div>`;
+    if(fm.homeScore!==null){
+      const champ=fm.homeScore>fm.awayScore?f1:fm.homeScore<fm.awayScore?f2:null;
+      html+=`<div class="champion-wrap"><span class="champ-trophy">🏆</span>${champ?`<div class="champ-label">Champion</div><div class="champ-name">${champ.name}</div><div class="champ-score">Final · ${fm.homeScore} – ${fm.awayScore}</div>`:`<div class="champ-label">Draw</div><div class="champ-name" style="font-size:32px;">${f1.name} ${fm.homeScore}–${fm.awayScore} ${f2.name}</div>`}</div><button class="btn-edit" onclick="editFinal()">✎ Edit Final Result</button>`;
+    }else html+=`<div class="grand-final-card"><div class="gf-label">⭐ Grand Final ⭐</div><div class="m-teams"><div class="m-team">${av(f1.idx,f1.name,40)}<span class="m-team-name">${f1.name}</span></div><div class="m-vs">VS</div><div class="m-team away">${av(f2.idx,f2.name,40)}<span class="m-team-name">${f2.name}</span></div></div><div class="m-score-entry" style="margin-top:14px;"><input type="number" id="fs1" min="0" max="99" placeholder="0"><span class="score-sep">–</span><input type="number" id="fs2" min="0" max="99" placeholder="0"><button class="btn-save" onclick="saveFinal()">Save</button></div></div>`;
+    el.innerHTML=html; return;
   }
-  el.innerHTML=html;
+
+  // Knockout and group modes
+  if(T.mode==='groups' && T.phase==='group'){
+    const done=groupsDone();
+    el.innerHTML=`<div class="final-locked"><span class="lock">${done?'⚡':'🔒'}</span><p>${done?'Group stage complete. The knockout bracket is being prepared.':'Finish every group match to unlock the knockout bracket.'}</p></div>`;
+    return;
+  }
+  const champMatch=T.matches.filter(m=>m.stage==='knockout'&&m.round===T.bracketRound&&m.homeScore!==null&&m.awayScore!==null);
+  if(T.finalMatch && T.finalMatch.p1idx!==undefined && T.finalMatch.p2idx!==undefined && T.finalMatch.homeScore!==null){
+    const c=winnerOf({home:T.finalMatch.p1idx,away:T.finalMatch.p2idx,homeScore:T.finalMatch.homeScore,awayScore:T.finalMatch.awayScore});
+    const cn=T.players[c]?.name||'Champion';
+    el.innerHTML=`<div class="champion-wrap"><span class="champ-trophy">🏆</span><div class="champ-label">Champion</div><div class="champ-name">${cn}</div><div class="champ-score">Final · ${T.finalMatch.homeScore} – ${T.finalMatch.awayScore}</div></div>`;
+    return;
+  }
+  const labels={1:'Round of 16',2:'Quarter-Finals',3:'Semi-Finals',4:'Final'};
+  const pending=T.matches.filter(m=>m.stage==='knockout'&&m.round===T.bracketRound);
+  el.innerHTML=`<div class="final-locked"><span class="lock">⚡</span><p><strong style="color:var(--t1)">${labels[T.bracketRound]||'Knockout'}</strong><br>${pending.length} match${pending.length===1?'':'es'} in this round.<br><br>Enter results from the Matches tab. Draws are not allowed.</p></div>`;
 }
 
 function saveFinal(){
-  const s1=parseInt(document.getElementById('fs1').value);
-  const s2=parseInt(document.getElementById('fs2').value);
+  const s1=parseInt(document.getElementById('fs1').value), s2=parseInt(document.getElementById('fs2').value);
   if(isNaN(s1)||isNaN(s2)||s1<0||s2<0){toast('⚠️ Enter valid scores');return;}
   T.finalMatch.homeScore=s1; T.finalMatch.awayScore=s2;
   finalize(); renderAll(); saveRemote();
@@ -1155,28 +1972,39 @@ function editFinal(){
 ════════════════════════════════════════════════ */
 function finalize(){
   if(T._fin) return; T._fin=true;
-  const fm=T.finalMatch, st=standings(), f1=st[0], f2=st[1];
-  const champ=fm.homeScore>fm.awayScore?f1:fm.homeScore<fm.awayScore?f2:null;
+  const fm=T.finalMatch, st=standings();
+  let f1, f2, champ;
+  if(T.mode==='league'){
+    f1=st[0]; f2=st[1];
+    champ=fm.homeScore>fm.awayScore?f1:fm.homeScore<fm.awayScore?f2:null;
+  }else{
+    f1={idx:fm.p1idx,name:T.players[fm.p1idx]?.name}; f2={idx:fm.p2idx,name:T.players[fm.p2idx]?.name};
+    champ=fm.p1idx!=null && fm.p2idx!=null ? (fm.homeScore>fm.awayScore?f1:fm.homeScore<fm.awayScore?f2:null) : null;
+  }
 
-  T.players.forEach((p,idx)=>{
-    const n=p.name;
-    if(!AT.players[n]) AT.players[n]={trophies:0,goals:0,matches:0,wins:0,draws:0,losses:0,tourneys:0};
-    const at=AT.players[n];
-    const s=st.find(x=>x.idx===idx)||{played:0,wins:0,draws:0,losses:0,gf:0};
-    at.matches+=s.played; at.wins+=s.wins; at.draws+=s.draws; at.losses+=s.losses; at.goals+=s.gf;
+  // Count all recorded matches in this tournament exactly once.
+  T.matches.filter(m=>m.homeScore!==null).forEach(m=>{
+    const hn=T.players[m.home]?.name, an=T.players[m.away]?.name;
+    if(hn&&AT.players[hn]){ AT.players[hn].matches++; AT.players[hn].goals+=m.homeScore; }
+    if(an&&AT.players[an]){ AT.players[an].matches++; AT.players[an].goals+=m.awayScore; }
+    if(hn&&AT.players[hn] && an&&AT.players[an]){
+      if(m.homeScore>m.awayScore){AT.players[hn].wins++;AT.players[an].losses++;}
+      else if(m.homeScore<m.awayScore){AT.players[an].wins++;AT.players[hn].losses++;}
+      else {AT.players[hn].draws++;AT.players[an].draws++;}
+    }
   });
-  const fn1=T.players[f1.idx]?.name, fn2=T.players[f2.idx]?.name;
-  if(fn1&&AT.players[fn1]){ AT.players[fn1].goals+=fm.homeScore; AT.players[fn1].matches+=1; }
-  if(fn2&&AT.players[fn2]){ AT.players[fn2].goals+=fm.awayScore; AT.players[fn2].matches+=1; }
+  const fn1=f1?.name, fn2=f2?.name;
+  if(T.mode==='league' && fm.homeScore!==null){
+    if(fn1&&AT.players[fn1]){ AT.players[fn1].matches++; AT.players[fn1].goals+=fm.homeScore; fm.homeScore>fm.awayScore?AT.players[fn1].wins++:fm.homeScore<fm.awayScore?AT.players[fn1].losses++:AT.players[fn1].draws++; }
+    if(fn2&&AT.players[fn2]){ AT.players[fn2].matches++; AT.players[fn2].goals+=fm.awayScore; fm.awayScore>fm.homeScore?AT.players[fn2].wins++:fm.awayScore<fm.homeScore?AT.players[fn2].losses++:AT.players[fn2].draws++; }
+  }
   if(champ){ const cn=T.players[champ.idx]?.name; if(cn&&AT.players[cn]) AT.players[cn].trophies+=1; }
-  if(fn1&&AT.players[fn1]){ fm.homeScore>fm.awayScore?AT.players[fn1].wins+=1:fm.homeScore<fm.awayScore?AT.players[fn1].losses+=1:AT.players[fn1].draws+=1; }
-  if(fn2&&AT.players[fn2]){ fm.awayScore>fm.homeScore?AT.players[fn2].wins+=1:fm.awayScore<fm.homeScore?AT.players[fn2].losses+=1:AT.players[fn2].draws+=1; }
 
   AT.history.unshift({
     date: new Date().toLocaleDateString('en-GB'),
     champion: champ?T.players[champ.idx]?.name:'Draw',
     players: T.players.map(p=>p.name),
-    score: `${fm.homeScore}–${fm.awayScore}`,
+    score: fm&&fm.homeScore!=null ? `${fm.homeScore}–${fm.awayScore}` : 'Knockout',
     finalists:[fn1,fn2]
   });
   if(AT.history.length>50) AT.history=AT.history.slice(0,50);
@@ -1435,20 +2263,20 @@ function openProfile(name){
    STATUS BAR
 ════════════════════════════════════════════════ */
 function updateStatus(){
-  const done=T.matches.filter(m=>m.homeScore!==null).length;
-  const total=T.matches.length;
-  const fd=T.finalMatch&&T.finalMatch.homeScore!==null;
-  const pill=document.getElementById('status-pill');
-  const txt=document.getElementById('status-text');
-  if(fd){
-    txt.textContent='Tournament complete!';
-    pill.textContent='DONE'; pill.className='s-pill done';
-  } else if(done===total&&total>0){
-    txt.textContent='Group stage done — final ready!';
-    pill.textContent='FINAL'; pill.className='s-pill final';
-  } else {
-    txt.textContent=`Group stage: ${done} / ${total} played`;
-    pill.textContent='LIVE'; pill.className='s-pill live';
+  const done=T.matches.filter(m=>m.homeScore!==null).length, total=T.matches.length;
+  const pill=document.getElementById('status-pill'), txt=document.getElementById('status-text');
+  if(T.mode==='league'){
+    const fd=T.finalMatch&&T.finalMatch.homeScore!==null;
+    if(fd){txt.textContent='Tournament complete!';pill.textContent='DONE';pill.className='s-pill done';}
+    else if(done===total&&total>0){txt.textContent='League complete — final ready!';pill.textContent='FINAL';pill.className='s-pill final';}
+    else{txt.textContent=`League: ${done} / ${total} played`;pill.textContent='LIVE';pill.className='s-pill live';}
+  }else if(T.mode==='groups' && T.phase==='group'){
+    txt.textContent=`Group Stage: ${done} / ${total} played`; pill.textContent='GROUPS'; pill.className='s-pill live';
+  }else{
+    const current=T.matches.filter(m=>m.stage==='knockout'&&m.round===T.bracketRound);
+    const label={1:'Round of 16',2:'Quarter-Finals',3:'Semi-Finals',4:'Final'}[T.bracketRound]||'Knockout';
+    if(T.finalMatch&&T.finalMatch.homeScore!==null){txt.textContent='Tournament complete!';pill.textContent='DONE';pill.className='s-pill done';}
+    else{txt.textContent=`${label}: ${current.filter(m=>m.homeScore!==null).length} / ${current.length} played`;pill.textContent='KNOCKOUT';pill.className='s-pill final';}
   }
 }
 
@@ -1491,7 +2319,7 @@ function goSetup(){
 ════════════════════════════════════════════════ */
 function confirmReset(){
   openModal('Reset Tournament?','This ends the current tournament. All-time stats and player profiles are permanently kept.',()=>{
-    T={players:[],matches:[],finalMatch:null,phase:'setup',_fin:false};
+    T={players:[],matches:[],finalMatch:null,phase:'setup',_fin:false,mode:'league',groups:[],bracketRound:0};
     goSetup(); buildSetup(); saveRemote(); closeModal();
   });
 }
@@ -1527,6 +2355,8 @@ window.onload=async function(){
   const remote=await loadRemote();
   if(remote){
     if(remote.tournament) T=remote.tournament;
+    selectedMode=T.mode||'league';
+    playerCount=T.players?.length||playerCount;
     if(remote.alltime)    AT=remote.alltime;
     /* backwards compat */
     if(!remote.tournament&&remote.players)
