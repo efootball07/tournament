@@ -1389,16 +1389,26 @@ main { max-width: 660px; margin: 0 auto; padding: 24px 16px 80px; position: rela
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
+<script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-database-compat.js"></script>
+
 <script>
 
-
-
-
 /* ════════════════════════════════════════════════
-   CONFIG
+   FIREBASE CONFIG
 ════════════════════════════════════════════════ */
-const BIN_ID  = "6a25c5e4f5f4af5e29c7b151";
-const API_KEY = "$2a$10$hHNJwr0zLsTYIAzcGRQeHOg/HVqfWziMgmmiQ5H1k3PIeqol69Y.m";
+const firebaseConfig = {
+  apiKey: "AIzaSyDbZb2im955nPBrnu1pawj67BF77y1kJc0",
+  authDomain: "efootball-ad636.firebaseapp.com",
+  databaseURL: "https://efootball-ad636-default-rtdb.firebaseio.com",
+  projectId: "efootball-ad636",
+  storageBucket: "efootball-ad636.firebasestorage.app",
+  messagingSenderId: "992766516015",
+  appId: "1:992766516015:web:b35161fba8d7374ae41fda"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
 /* ════════════════════════════════════════════════
    PREDEFINED PLAYERS
@@ -1435,19 +1445,47 @@ let selectedMode = 'league';
 ════════════════════════════════════════════════ */
 async function loadRemote(){
   try{
-    const r=await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`,{headers:{"X-Master-Key":API_KEY}});
-    if(!r.ok) return null;
-    return (await r.json()).record;
-  }catch(e){ return null; }
+    const snapshot = await db.ref("efootball").once("value");
+    return snapshot.val();
+  }catch(e){
+    console.warn("Firebase load failed", e);
+    return null;
+  }
 }
+
 async function saveRemote(){
   try{
-    await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`,{
-      method:"PUT",
-      headers:{"Content-Type":"application/json","X-Master-Key":API_KEY},
-      body:JSON.stringify({tournament:T,alltime:AT})
+    await db.ref("efootball").set({
+      tournament: T,
+      alltime: AT
     });
-  }catch(e){ console.warn("Save failed",e); }
+  }catch(e){
+    console.warn("Firebase save failed", e);
+  }
+}
+
+/* Keep every open copy of the site synchronized in realtime. */
+function startRealtimeSync(){
+  db.ref("efootball").on("value", snapshot => {
+    const remote = snapshot.val();
+    if(!remote) return;
+
+    if(remote.tournament) T = remote.tournament;
+    if(remote.alltime) AT = remote.alltime;
+    selectedMode = T.mode || 'league';
+    playerCount = T.players?.length || playerCount;
+
+    buildSetup();
+    if(T.players && T.players.length > 0){
+      goMain();
+      renderAll();
+    }else{
+      goSetup();
+    }
+
+    const vb = document.getElementById('view-stats-btn');
+    if(vb) vb.style.display = Object.keys(AT.players || {}).length > 0 ? 'block' : 'none';
+  });
 }
 
 /* ════════════════════════════════════════════════
@@ -2370,6 +2408,7 @@ window.onload=async function(){
   }
   
   if(T.players&&T.players.length>0) goMain();
+  startRealtimeSync();
   const hasData = Object.keys(AT.players).length > 0;
   const vb = document.getElementById('view-stats-btn');
   if(vb) vb.style.display = hasData ? 'block' : 'none';
