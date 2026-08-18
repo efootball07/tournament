@@ -146,6 +146,34 @@ header {
 .hdr-btn:hover { color: var(--t1); border-color: var(--line3); }
 .hdr-btn.red:hover { color: var(--loss); border-color: rgba(239,68,68,0.3); }
 
+/* ── ADMIN ACCESS ── */
+.admin-badge {
+  height:30px; padding:0 10px; border-radius:var(--r-sm);
+  display:inline-flex; align-items:center; border:1px solid rgba(34,197,94,.30);
+  background:var(--win-lo); color:var(--win); font-size:10px; font-weight:800;
+  letter-spacing:1px; text-transform:uppercase;
+}
+.admin-lock {
+  display:flex; align-items:center; gap:12px; margin:0 0 24px; padding:14px 15px;
+  border:1px solid var(--line2); border-radius:var(--r-lg); background:rgba(15,17,24,.88);
+}
+.admin-lock-icon { font-size:22px; width:34px; text-align:center; }
+.admin-lock strong { display:block; font-family:var(--font-display); font-size:14px; letter-spacing:.5px; color:var(--t1); }
+.admin-lock span { display:block; margin-top:2px; color:var(--t3); font-size:11px; }
+.admin-lock .hdr-btn { margin-left:auto; flex-shrink:0; color:var(--amber); border-color:var(--amber-hi); }
+.admin-only.admin-disabled { opacity:.45; pointer-events:none; user-select:none; }
+.pc-btn:disabled, .mode-card:disabled { cursor:not-allowed; opacity:.45; transform:none; }
+.admin-login-modal { max-width:420px; }
+.admin-login-modal p { color:var(--t2); font-size:13px; margin:8px 0 16px; }
+.admin-input-wrap { display:flex; align-items:center; gap:0; border:1px solid var(--line2); background:var(--ink2); border-radius:var(--r); overflow:hidden; }
+.admin-input-wrap:focus-within { border-color:var(--amber); box-shadow:0 0 0 3px var(--amber-lo); }
+.admin-input-wrap input { flex:1; min-width:0; height:46px; padding:0 13px; border:0; outline:0; background:transparent; color:var(--t1); font-size:14px; }
+.admin-input-wrap input::placeholder { color:var(--t3); }
+.admin-eye { width:44px; height:46px; border:0; border-left:1px solid var(--line); background:transparent; color:var(--t3); }
+.admin-eye:hover { color:var(--t1); }
+.admin-login-error { min-height:18px; margin-top:8px; color:var(--loss); font-size:12px; font-weight:600; }
+.viewer-note { margin:12px 0 0; text-align:center; color:var(--t3); font-size:11px; }
+
 /* ── MAIN ── */
 main { max-width: 660px; margin: 0 auto; padding: 24px 16px 80px; position: relative; z-index: 1; }
 
@@ -454,6 +482,9 @@ main { max-width: 660px; margin: 0 auto; padding: 24px 16px 80px; position: rela
 .badge-w { background: var(--win-lo);  color: var(--win); }
 .badge-d { background: var(--draw-lo); color: var(--draw); }
 .badge-l { background: var(--loss-lo); color: var(--loss); }
+
+
+
 
 
 /* ── KNOCKOUT BRACKET ── */
@@ -769,6 +800,9 @@ main { max-width: 660px; margin: 0 auto; padding: 24px 16px 80px; position: rela
 }
 
 
+
+
+
 /* ── PHONE BRACKET: COMPACT / NO HORIZONTAL SCROLL ── */
 @media (max-width: 600px){
   .bracket-wrap{
@@ -894,6 +928,12 @@ main { max-width: 660px; margin: 0 auto; padding: 24px 16px 80px; position: rela
   .bracket-team-name{ max-width:34px; }
   .bracket-stack{ height:470px; }
 }
+
+
+
+
+
+
 
 
 
@@ -1256,6 +1296,9 @@ main { max-width: 660px; margin: 0 auto; padding: 24px 16px 80px; position: rela
   }
 }
 
+
+.r-tag { display:inline-flex; align-items:center; }
+.r-tag button:hover { transform:scale(1.15); }
 </style>
 </head>
 <body>
@@ -1267,11 +1310,18 @@ main { max-width: 660px; margin: 0 auto; padding: 24px 16px 80px; position: rela
     <span class="logo-text">eFootball <span>Cup</span></span>
   </div>
   <div class="hdr-right">
-    <button class="hdr-btn red" id="reset-btn" style="display:none" onclick="confirmReset()">↺ Reset</button>
+    <span id="admin-badge" class="admin-badge" style="display:none">🔐 ADMIN</span>
+    <button class="hdr-btn" id="admin-login-btn" onclick="openAdminLogin()">🔐 Admin Login</button>
+    <button class="hdr-btn" id="admin-logout-btn" style="display:none" onclick="adminLogout()">↪ Logout</button>
+    <button class="hdr-btn red admin-only" id="reset-btn" style="display:none" onclick="confirmReset()">↺ Reset</button>
+    <button class="hdr-btn red admin-only" id="clear-all-btn" style="display:none" onclick="confirmClearAll()">✕ Clear All</button>
   </div>
 </header>
 
 <main>
+
+
+
 
 
   <!-- ══ SETUP SCREEN ══ -->
@@ -1279,10 +1329,19 @@ main { max-width: 660px; margin: 0 auto; padding: 24px 16px 80px; position: rela
     <div class="setup-hero">
       <div class="setup-eyebrow">⚽ Tournament Manager</div>
       <h1>eFootball<br><em>Cup</em></h1>
-      <p>Set up your tournament · Track live stats · Crown your champion</p>
+      <p id="setup-subtitle">Set up your tournament · Track live stats · Crown your champion</p>
     </div>
 
-    <div class="mode-wrap">
+    <div id="admin-setup-lock" class="admin-lock">
+      <div class="admin-lock-icon">🔒</div>
+      <div>
+        <strong>Admin access required</strong>
+        <span>Visitors can view results, but only an administrator can create or modify a tournament.</span>
+      </div>
+      <button class="hdr-btn" onclick="openAdminLogin()">Admin Login</button>
+    </div>
+
+    <div class="mode-wrap admin-only">
       <div class="s-label">Tournament Mode</div>
       <div class="mode-grid" id="mode-grid">
         <button type="button" class="mode-card on" data-mode="league" onclick="selectMode('league')">
@@ -1298,25 +1357,25 @@ main { max-width: 660px; margin: 0 auto; padding: 24px 16px 80px; position: rela
           <div class="mode-desc">8 or 16 players · groups → knockout</div>
         </button>
       </div>
-      <div class="setup-helper" id="mode-helper">League mode supports the existing round-robin format.</div>
+      <div class="setup-helper" id="mode-helper"></div>
     </div>
 
-    <div class="pcount-wrap">
+    <div class="pcount-wrap admin-only">
       <div class="s-label">Number of Players</div>
       <div class="pcount-row" id="pcount-row"></div>
     </div>
 
     <div style="margin-bottom:20px;">
       <div class="s-label">Player Names</div>
-      <div id="returning-wrap" class="returning-wrap" style="display:none;">
+      <div id="returning-wrap" class="returning-wrap admin-only" style="display:none;">
         <div class="returning-label">Returning players — tap to fill:</div>
         <div class="r-tags" id="r-tags"></div>
       </div>
-      <div class="p-grid" id="p-grid"></div>
+      <div class="p-grid admin-only" id="p-grid"></div>
     </div>
 
     <div class="setup-err" id="setup-err">Please enter all player names with no duplicates.</div>
-    <button class="start-btn" onclick="startTournament()">⚽ Generate Fixtures</button>
+    <button class="start-btn admin-only" onclick="startTournament()">⚽ Generate Fixtures</button>
 <button class="view-btn" id="view-stats-btn" style="display:none;" onclick="viewStats()">📊 View Stats & Profiles</button>
   </div>
 
@@ -1326,6 +1385,7 @@ main { max-width: 660px; margin: 0 auto; padding: 24px 16px 80px; position: rela
       <span class="status-text" id="status-text">Loading…</span>
       <span class="s-pill live" id="status-pill">LIVE</span>
     </div>
+    <div id="viewer-note" class="viewer-note">👁 Public view · Results are visible to everyone</div>
 
     <div class="tabs">
       <button class="t-btn on"  id="tb-table"    onclick="switchTab('table')">Table</button>
@@ -1374,6 +1434,23 @@ main { max-width: 660px; margin: 0 auto; padding: 24px 16px 80px; position: rela
 
 </main>
 
+<!-- ADMIN LOGIN -->
+<div class="modal-overlay" id="admin-login-modal">
+  <div class="modal admin-login-modal">
+    <h3>🔐 Administrator Login</h3>
+    <p>Enter the admin pass key to manage tournaments, players, results and settings.</p>
+    <div class="admin-input-wrap">
+      <input type="password" id="admin-passkey" autocomplete="current-password" placeholder="Enter admin pass key" maxlength="100" onkeydown="if(event.key==='Enter') submitAdminLogin()">
+      <button type="button" class="admin-eye" onclick="toggleAdminPasskey()" title="Show / hide pass key">◉</button>
+    </div>
+    <div id="admin-login-error" class="admin-login-error"></div>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="closeAdminLogin()">Cancel</button>
+      <button class="modal-btn confirm" onclick="submitAdminLogin()">Login</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
@@ -1413,7 +1490,7 @@ const db = firebase.database();
 /* ════════════════════════════════════════════════
    PREDEFINED PLAYERS
 ════════════════════════════════════════════════ */
-const PREDEFINED = ["Badhon","Raiyan","Rahabar"];
+const PREDEFINED = [];
 
 /* ════════════════════════════════════════════════
    AVATAR PALETTE
@@ -1439,6 +1516,108 @@ let T  = { players:[], matches:[], finalMatch:null, phase:'setup', _fin:false, m
 let AT = { players:{}, history:[] };
 let playerCount = 3;
 let selectedMode = 'league';
+let realtimeListener = null;
+let isClearingAll = false;
+
+function emptyTournament(){
+  return {players:[],matches:[],finalMatch:null,phase:'setup',_fin:false,mode:'league',groups:[],bracketRound:0};
+}
+
+function emptyAllTime(){
+  return {players:{},history:[]};
+}
+
+/* ════════════════════════════════════════════════
+   ADMIN ACCESS
+════════════════════════════════════════════════ */
+// Change this pass key before publishing the file.
+const ADMIN_PASSKEY = 'EFC-ADMIN-2026';
+let isAdmin = false;
+
+function restoreAdminSession(){
+  try { isAdmin = sessionStorage.getItem('efootball_admin') === '1'; }
+  catch(e){ isAdmin = false; }
+  updateAdminUI();
+}
+
+function updateAdminUI(){
+  document.querySelectorAll('.admin-only').forEach(el=>{
+    el.classList.toggle('admin-disabled', !isAdmin);
+  });
+
+  const login=document.getElementById('admin-login-btn');
+  const logout=document.getElementById('admin-logout-btn');
+  const badge=document.getElementById('admin-badge');
+  const lock=document.getElementById('admin-setup-lock');
+  const subtitle=document.getElementById('setup-subtitle');
+  if(login) login.style.display=isAdmin?'none':'';
+  if(logout) logout.style.display=isAdmin?'':'none';
+  if(badge) badge.style.display=isAdmin?'':'none';
+  if(lock) lock.style.display=isAdmin?'none':'flex';
+  if(subtitle) subtitle.textContent=isAdmin
+    ? 'Admin mode · Create tournaments · Manage results · Control player data'
+    : 'View results, tables and player profiles · Admin access required for changes';
+
+  const reset=document.getElementById('reset-btn');
+  const clear=document.getElementById('clear-all-btn');
+  if(reset) reset.style.display=(isAdmin && T.players && T.players.length)?'':'none';
+  if(clear) clear.style.display=isAdmin?'':'none';
+}
+
+function requireAdmin(action='perform this action'){
+  if(isAdmin) return true;
+  toast('🔒 Admin login required to '+action);
+  openAdminLogin();
+  return false;
+}
+
+function openAdminLogin(){
+  const modal=document.getElementById('admin-login-modal');
+  const input=document.getElementById('admin-passkey');
+  const err=document.getElementById('admin-login-error');
+  if(!modal) return;
+  if(err) err.textContent='';
+  if(input){ input.value=''; input.type='password'; setTimeout(()=>input.focus(),80); }
+  modal.classList.add('open');
+}
+
+function closeAdminLogin(){
+  const modal=document.getElementById('admin-login-modal');
+  if(modal) modal.classList.remove('open');
+}
+
+function toggleAdminPasskey(){
+  const input=document.getElementById('admin-passkey');
+  if(input) input.type=input.type==='password'?'text':'password';
+}
+
+function submitAdminLogin(){
+  const input=document.getElementById('admin-passkey');
+  const err=document.getElementById('admin-login-error');
+  const value=(input?.value||'').trim();
+  if(value!==ADMIN_PASSKEY){
+    if(err) err.textContent='Incorrect admin pass key.';
+    if(input){ input.focus(); input.select(); }
+    return;
+  }
+  isAdmin=true;
+  try { sessionStorage.setItem('efootball_admin','1'); } catch(e){}
+  closeAdminLogin();
+  updateAdminUI();
+  if(!T.players || !T.players.length) { goSetup(); buildSetup(); renderAll(); }
+  toast('✓ Admin access granted');
+}
+
+function adminLogout(){
+  isAdmin=false;
+  try { sessionStorage.removeItem('efootball_admin'); } catch(e){}
+  closeModal();
+  closeAdminLogin();
+  updateAdminUI();
+  if(T.players && T.players.length) goMain();
+  else { goSetup(); buildSetup(); renderAll(); }
+  toast('✓ Admin logged out');
+}
 
 /* ════════════════════════════════════════════════
    REMOTE
@@ -1466,14 +1645,21 @@ async function saveRemote(){
 
 /* Keep every open copy of the site synchronized in realtime. */
 function startRealtimeSync(){
-  db.ref("efootball").on("value", snapshot => {
+  if(realtimeListener){
+    db.ref("efootball").off("value", realtimeListener);
+  }
+
+  realtimeListener = snapshot => {
+    if(isClearingAll) return;
     const remote = snapshot.val();
     if(!remote) return;
 
     if(remote.tournament) T = remote.tournament;
     if(remote.alltime) AT = remote.alltime;
+    normalizeTournamentData();
+
     selectedMode = T.mode || 'league';
-    playerCount = T.players?.length || playerCount;
+    playerCount = T.players?.length || (selectedMode==='knockout'?16:(selectedMode==='groups'?8:3));
 
     buildSetup();
     if(T.players && T.players.length > 0){
@@ -1481,17 +1667,22 @@ function startRealtimeSync(){
       renderAll();
     }else{
       goSetup();
+      renderAll();
     }
 
     const vb = document.getElementById('view-stats-btn');
     if(vb) vb.style.display = Object.keys(AT.players || {}).length > 0 ? 'block' : 'none';
-  });
+    updateAdminUI();
+  };
+
+  db.ref("efootball").on("value", realtimeListener);
 }
 
 /* ════════════════════════════════════════════════
    SETUP UI
 ════════════════════════════════════════════════ */
 function selectMode(mode){
+  if(!requireAdmin('change tournament settings')) return;
   selectedMode=mode;
   document.querySelectorAll('.mode-card').forEach(b=>b.classList.toggle('on',b.dataset.mode===mode));
   const helper=document.getElementById('mode-helper');
@@ -1518,7 +1709,8 @@ function buildSetup(){
     const b=document.createElement('button');
     b.className='pc-btn'+(n===playerCount?' on':'');
     b.textContent=n;
-    b.onclick=()=>{ playerCount=n; buildSetup(); };
+    b.disabled=!isAdmin;
+    b.onclick=()=>{ if(!requireAdmin('change the player count')) return; playerCount=n; buildSetup(); };
     row.appendChild(b);
   });
 
@@ -1530,7 +1722,8 @@ function buildSetup(){
     rt.innerHTML=names.map((n,i)=>`
       <span class="r-tag" onclick="fillSlot('${n.replace(/'/g,"\\'")}')">
         <span class="r-tag-av" style="background:${AV_BG[i%8]};color:${AV_FG[i%8]};">${ini(n)}</span>
-        ${n}&nbsp;·&nbsp;${AT.players[n].trophies||0}🏆
+        <span>${n}&nbsp;·&nbsp;${AT.players[n].trophies||0}🏆</span>
+        <button type="button" title="Remove ${n}" onclick="event.stopPropagation(); removePlayer('${n.replace(/'/g,"\\'")}')" style="margin-left:7px;border:0;background:transparent;color:var(--crim);font-size:16px;font-weight:800;line-height:1;cursor:pointer;padding:0 2px;">×</button>
       </span>`).join('');
   } else { rw.style.display='none'; }
 
@@ -1544,16 +1737,38 @@ function buildSetup(){
       <div class="p-card-lbl">
         <span class="p-dot" style="background:${DOT_COLORS[i%8]};"></span>Player ${i+1}
       </div>
-      <input type="text" id="pi${i}" placeholder="Enter name" maxlength="18" autocomplete="off" value="${pre}">`;
+      <input type="text" id="pi${i}" placeholder="Enter name" maxlength="18" autocomplete="off" value="${pre}" ${isAdmin?'':'disabled'}>`;
     grid.appendChild(d);
   }
+  document.querySelectorAll('#mode-grid .mode-card').forEach(b=>{ b.disabled=!isAdmin; });
+  updateAdminUI();
 }
 
 function fillSlot(name){
+  if(!isAdmin) return;
   for(let i=0;i<playerCount;i++){
     const el=document.getElementById('pi'+i);
     if(el&&!el.value.trim()){ el.value=name; return; }
   }
+}
+
+function removePlayer(name){
+  if(!requireAdmin('remove a player')) return;
+  if(!name || !AT.players[name]) return;
+  const inActive = (T.players || []).some(p => p && p.name === name);
+  if(inActive){
+    toast('⚠️ Cannot remove a player from an active tournament. Reset the tournament first.');
+    return;
+  }
+  openModal('Remove Player?', `Remove ${name} and their saved stats/history? This cannot be undone.`, async()=>{
+    delete AT.players[name];
+    AT.history = (AT.history || []).filter(h => !(h.players || []).includes(name));
+    buildSetup();
+    renderAll();
+    saveRemote();
+    closeModal();
+    toast(`✓ ${name} removed`);
+  });
 }
 
 /* ════════════════════════════════════════════════
@@ -1696,6 +1911,7 @@ function startGroupKnockout(){
 }
 
 function startTournament(){
+  if(!requireAdmin('create a tournament')) return;
   const names=[];
   for(let i=0;i<playerCount;i++) names.push((document.getElementById('pi'+i)?.value||'').trim());
   const err=document.getElementById('setup-err');
@@ -1726,6 +1942,9 @@ function startTournament(){
 function viewStats(){
   goMain();
 }
+
+
+
 
 
 function standings(){
@@ -1798,6 +2017,29 @@ function renderTable(){
 }
 
 /* ════════════════════════════════════════════════
+   MATCH DATA NORMALIZATION
+   Prevent old/partial Firebase records from being
+   interpreted as completed matches.
+════════════════════════════════════════════════ */
+function normalizeScore(v){
+  if(v===null || v===undefined || v==='') return null;
+  const n=Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+function normalizeTournamentData(){
+  if(Array.isArray(T.matches)){
+    T.matches.forEach(m=>{
+      m.homeScore=normalizeScore(m.homeScore);
+      m.awayScore=normalizeScore(m.awayScore);
+    });
+  }
+  if(T.finalMatch){
+    T.finalMatch.homeScore=normalizeScore(T.finalMatch.homeScore);
+    T.finalMatch.awayScore=normalizeScore(T.finalMatch.awayScore);
+  }
+}
+
+/* ════════════════════════════════════════════════
    RENDER: MATCHES
 ════════════════════════════════════════════════ */
 function knockoutLabel(round){
@@ -1805,12 +2047,12 @@ function knockoutLabel(round){
 }
 
 function bracketMatchCard(m){
-  const hName=m.home!=null&&T.players[m.home]?T.players[m.home].name:'TBD';
-  const aName=m.away!=null&&T.players[m.away]?T.players[m.away].name:'TBD';
-  const played=m.homeScore!==null && m.awayScore!==null;
+  const hName=m.home!=null&&T.players[m.home]?T.players[m.home].name:'';
+  const aName=m.away!=null&&T.players[m.away]?T.players[m.away].name:'';
+  const played=Number.isFinite(m.homeScore) && Number.isFinite(m.awayScore);
   const hw=played&&m.homeScore>m.awayScore, aw=played&&m.awayScore>m.homeScore;
-  const team=(idx,name,score,win)=>`<div class="bracket-team ${win?'winner':''} ${name==='TBD'?'tbd':''}">
-    <div class="bracket-team-left">${name==='TBD'?'':av(idx,name,22)}<span class="bracket-team-name">${name}</span>${win?'<span class="bracket-badge">WIN</span>':''}</div>
+  const team=(idx,name,score,win)=>`<div class="bracket-team ${win?'winner':''} ${name?'':'tbd'}">
+    <div class="bracket-team-left">${name?av(idx,name,22):''}<span class="bracket-team-name">${name}</span>${win?'<span class="bracket-badge">WIN</span>':''}</div>
     <span class="bracket-score">${played?score:'—'}</span>
   </div>`;
   return `<div class="bracket-match ${played?'done':'live'}">${team(m.home,hName,m.homeScore,hw)}${team(m.away,aName,m.awayScore,aw)}<span class="bracket-arrow">›</span></div>`;
@@ -1857,8 +2099,8 @@ function renderBracket(){
       const m=ms[i];
       const card=m ? bracketMatchCard(m) :
         `<div class="bracket-match">
-          <div class="bracket-team tbd"><div class="bracket-team-left"><span class="bracket-team-name">TBD</span></div><span class="bracket-score">—</span></div>
-          <div class="bracket-team tbd"><div class="bracket-team-left"><span class="bracket-team-name">TBD</span></div><span class="bracket-score">—</span></div>
+          <div class="bracket-team tbd"><div class="bracket-team-left"><span class="bracket-team-name"></span></div><span class="bracket-score">—</span></div>
+          <div class="bracket-team tbd"><div class="bracket-team-left"><span class="bracket-team-name"></span></div><span class="bracket-score">—</span></div>
           ${r<4?'<span class="bracket-arrow">›</span>':''}
         </div>`;
 
@@ -1896,26 +2138,29 @@ function renderMatches(){
       const title=stage==='league'?`Round ${r}`:stage==='group'?`Group ${String.fromCharCode(64+r)} Matches`:knockoutLabel(r);
       html+=`<div class="r-label">${title}</div>`;
       stageMatches.filter(m=>m.round===r).forEach(m=>{
-        if(m.home===null||m.away===null) return;
-        const hN=T.players[m.home]?.name||'TBD', aN=T.players[m.away]?.name||'TBD';
-        const played=m.homeScore!==null;
+        if(m.home==null||m.away==null) return;
+        const hN=(m.home!=null && T.players[m.home] && T.players[m.home].name) ? T.players[m.home].name : '';
+        const aN=(m.away!=null && T.players[m.away] && T.players[m.away].name) ? T.players[m.away].name : '';
+        const played=Number.isFinite(m.homeScore) && Number.isFinite(m.awayScore);
         if(played){
           let bh='',ba='';
           if(m.homeScore>m.awayScore){bh='<span class="badge badge-w">WIN</span>';ba='<span class="badge badge-l">LOSS</span>';}
           else if(m.homeScore<m.awayScore){bh='<span class="badge badge-l">LOSS</span>';ba='<span class="badge badge-w">WIN</span>';}
           else{bh='<span class="badge badge-d">DRAW</span>';ba='<span class="badge badge-d">DRAW</span>';}
           html+=`<div class="m-card played"><div class="m-teams">
-            <div class="m-team">${av(m.home,hN)}<div><div class="m-team-name">${hN}</div><div style="margin-top:4px;">${bh}</div></div></div>
+            <div class="m-team">${hN?av(m.home,hN):''}<div><div class="m-team-name">${hN}</div><div style="margin-top:4px;">${bh}</div></div></div>
             <div class="m-score-disp">${m.homeScore}&thinsp;–&thinsp;${m.awayScore}</div>
-            <div class="m-team away">${av(m.away,aN)}<div style="text-align:right"><div class="m-team-name">${aN}</div><div style="margin-top:4px;">${ba}</div></div></div>
+            <div class="m-team away">${aN?av(m.away,aN):''}<div style="text-align:right"><div class="m-team-name">${aN}</div><div style="margin-top:4px;">${ba}</div></div></div>
           </div><button class="btn-edit" onclick="editMatch(${m.id})">✎ Edit</button></div>`;
         }else{
-          html+=`<div class="m-card pending"><div class="m-teams">
-            <div class="m-team">${av(m.home,hN)}<span class="m-team-name">${hN}</span></div><div class="m-vs">VS</div>
-            <div class="m-team away">${av(m.away,aN)}<span class="m-team-name">${aN}</span></div>
-          </div><div class="m-score-entry"><div>
-            <input type="number" id="hs${m.id}" min="0" max="99" placeholder="0"><span class="score-sep">–</span>
-            <input type="number" id="as${m.id}" min="0" max="99" placeholder="0"></div>
+          html+=`<div class="m-card pending">
+          ${hN||aN?`<div class="m-teams">
+            <div class="m-team">${hN?av(m.home,hN):''}<span class="m-team-name">${hN}</span></div><div class="m-vs">VS</div>
+            <div class="m-team away">${aN?av(m.away,aN):''}<span class="m-team-name">${aN}</span></div>
+          </div>`:''}
+          <div class="m-score-entry"><div>
+            <input type="number" id="hs${m.id}" min="0" max="99" placeholder=""><span class="score-sep">–</span>
+            <input type="number" id="as${m.id}" min="0" max="99" placeholder=""></div>
             <button class="btn-save" onclick="saveMatch(${m.id})">Save</button></div></div>`;
         }
       });
@@ -1926,10 +2171,16 @@ function renderMatches(){
 }
 
 function saveMatch(id){
+  if(!requireAdmin('save match results')) return;
   const hs=parseInt(document.getElementById('hs'+id)?.value);
   const as=parseInt(document.getElementById('as'+id)?.value);
   if(isNaN(hs)||isNaN(as)||hs<0||as<0){toast('⚠️ Enter valid scores');return;}
   const m=T.matches.find(x=>x.id===id); if(!m)return;
+  if(m.home==null || m.away==null || !T.players[m.home] || !T.players[m.away]){
+    toast('⚠️ This match has no assigned players. Start a fresh tournament or reset it.');
+    return;
+  }
+  normalizeTournamentData();
   if(m.stage==='knockout' && hs===as){toast('⚠️ Knockout matches cannot end in a draw');return;}
   m.homeScore=hs; m.awayScore=as;
   if(m.stage==='group' && groupsDone()){
@@ -1940,6 +2191,7 @@ function saveMatch(id){
   renderAll(); saveRemote();
 }
 function editMatch(id){
+  if(!requireAdmin('edit match results')) return;
   const m=T.matches.find(x=>x.id===id); if(!m)return;
   m.homeScore=null; m.awayScore=null;
   // If editing a completed knockout round, remove later rounds so they can be regenerated.
@@ -1971,7 +2223,7 @@ function renderFinal(){
     if(fm.homeScore!==null){
       const champ=fm.homeScore>fm.awayScore?f1:fm.homeScore<fm.awayScore?f2:null;
       html+=`<div class="champion-wrap"><span class="champ-trophy">🏆</span>${champ?`<div class="champ-label">Champion</div><div class="champ-name">${champ.name}</div><div class="champ-score">Final · ${fm.homeScore} – ${fm.awayScore}</div>`:`<div class="champ-label">Draw</div><div class="champ-name" style="font-size:32px;">${f1.name} ${fm.homeScore}–${fm.awayScore} ${f2.name}</div>`}</div><button class="btn-edit" onclick="editFinal()">✎ Edit Final Result</button>`;
-    }else html+=`<div class="grand-final-card"><div class="gf-label">⭐ Grand Final ⭐</div><div class="m-teams"><div class="m-team">${av(f1.idx,f1.name,40)}<span class="m-team-name">${f1.name}</span></div><div class="m-vs">VS</div><div class="m-team away">${av(f2.idx,f2.name,40)}<span class="m-team-name">${f2.name}</span></div></div><div class="m-score-entry" style="margin-top:14px;"><input type="number" id="fs1" min="0" max="99" placeholder="0"><span class="score-sep">–</span><input type="number" id="fs2" min="0" max="99" placeholder="0"><button class="btn-save" onclick="saveFinal()">Save</button></div></div>`;
+    }else html+=`<div class="grand-final-card"><div class="gf-label">⭐ Grand Final ⭐</div><div class="m-teams"><div class="m-team">${av(f1.idx,f1.name,40)}<span class="m-team-name">${f1.name}</span></div><div class="m-vs">VS</div><div class="m-team away">${av(f2.idx,f2.name,40)}<span class="m-team-name">${f2.name}</span></div></div><div class="m-score-entry" style="margin-top:14px;"><input type="number" id="fs1" min="0" max="99" placeholder=""><span class="score-sep">–</span><input type="number" id="fs2" min="0" max="99" placeholder=""><button class="btn-save" onclick="saveFinal()">Save</button></div></div>`;
     el.innerHTML=html; return;
   }
 
@@ -1994,12 +2246,14 @@ function renderFinal(){
 }
 
 function saveFinal(){
+  if(!requireAdmin('save the final result')) return;
   const s1=parseInt(document.getElementById('fs1').value), s2=parseInt(document.getElementById('fs2').value);
   if(isNaN(s1)||isNaN(s2)||s1<0||s2<0){toast('⚠️ Enter valid scores');return;}
   T.finalMatch.homeScore=s1; T.finalMatch.awayScore=s2;
   finalize(); renderAll(); saveRemote();
 }
 function editFinal(){
+  if(!requireAdmin('edit the final result')) return;
   if(T._fin) unfinalize();
   T.finalMatch.homeScore=null; T.finalMatch.awayScore=null; T._fin=false;
   renderAll(); saveRemote();
@@ -2342,24 +2596,77 @@ function switchTab(name){
 function goMain(){
   document.getElementById('scr-setup').classList.remove('active');
   document.getElementById('scr-main').classList.add('active');
-  document.getElementById('reset-btn').style.display='';
   renderAll();
+  updateAdminUI();
 }
 function goSetup(){
   document.getElementById('scr-main').classList.remove('active');
   document.getElementById('scr-setup').classList.add('active');
-  document.getElementById('reset-btn').style.display='none';
   switchTab('table');
+  updateAdminUI();
 }
 
 /* ════════════════════════════════════════════════
    RESET
 ════════════════════════════════════════════════ */
 function confirmReset(){
-  openModal('Reset Tournament?','This ends the current tournament. All-time stats and player profiles are permanently kept.',()=>{
-    T={players:[],matches:[],finalMatch:null,phase:'setup',_fin:false,mode:'league',groups:[],bracketRound:0};
-    goSetup(); buildSetup(); saveRemote(); closeModal();
+  if(!requireAdmin('reset the tournament')) return;
+  openModal('Reset Tournament?','This ends the current tournament. All-time stats and player profiles will be kept.',async()=>{
+    T=emptyTournament();
+    playerCount=selectedMode==='knockout'?16:(selectedMode==='groups'?8:3);
+    goSetup();
+    buildSetup();
+    renderAll();
+    await saveRemote();
+    closeModal();
+    toast('✓ Tournament reset');
   });
+}
+
+async function clearEverythingNow(){
+  // Temporarily stop this browser from accepting the old Firebase snapshot
+  // while the empty state is being written. This prevents stale data from
+  // immediately reappearing after a reset.
+  isClearingAll=true;
+  if(realtimeListener){
+    db.ref("efootball").off("value", realtimeListener);
+  }
+
+  T=emptyTournament();
+  AT=emptyAllTime();
+  selectedMode='league';
+  playerCount=3;
+
+  try{
+    await db.ref("efootball").set({
+      tournament: T,
+      alltime: AT
+    });
+  }catch(e){
+    console.warn('Firebase clear failed', e);
+    toast('⚠️ Could not clear Firebase data');
+  }
+
+  goSetup();
+  buildSetup();
+  renderAll();
+  const vb=document.getElementById('view-stats-btn');
+  if(vb) vb.style.display='none';
+
+  isClearingAll=false;
+  startRealtimeSync();
+}
+
+function confirmClearAll(){
+  if(!requireAdmin('clear all tournament data')) return;
+  openModal('Clear Everything?',
+    'This permanently removes the current tournament, every saved player, all statistics, trophies, and tournament history. All values will return to 0 and all names will be removed.',
+    async()=>{
+      await clearEverythingNow();
+      closeModal();
+      toast('✓ Everything cleared — all values are 0');
+    }
+  );
 }
 
 /* ════════════════════════════════════════════════
@@ -2389,6 +2696,7 @@ function toast(msg){
    INIT
 ════════════════════════════════════════════════ */
 window.onload=async function(){
+  restoreAdminSession();
   buildSetup();
   const remote=await loadRemote();
   if(remote){
@@ -2400,18 +2708,24 @@ window.onload=async function(){
     if(!remote.tournament&&remote.players)
       T={players:remote.players,matches:remote.matches||[],finalMatch:remote.finalMatch||null,phase:remote.phase||'setup',_fin:false};
   }
+  normalizeTournamentData();
   buildSetup();
   const hash=location.hash;
   if(hash.startsWith('#profile/')){
     const name=decodeURIComponent(hash.slice(9));
     setTimeout(()=>openProfile(name),400);
   }
-  
+
   if(T.players&&T.players.length>0) goMain();
+  else {
+    playerCount=selectedMode==='knockout'?16:(selectedMode==='groups'?8:3);
+    buildSetup();
+  }
   startRealtimeSync();
   const hasData = Object.keys(AT.players).length > 0;
   const vb = document.getElementById('view-stats-btn');
   if(vb) vb.style.display = hasData ? 'block' : 'none';
+  updateAdminUI();
 };
 </script>
 </body>
