@@ -1558,7 +1558,7 @@ function emptyTournament(){
 }
 
 function emptyAllTime(){
-  return {players:{},history:[]};
+  return {players:{},history:[],tournamentCount:0};
 }
 
 /* ════════════════════════════════════════════════
@@ -1966,9 +1966,10 @@ function startTournament(){
     T.matches=genGroupMatches(T.groups); T.phase='group';
   }
 
+  // Do NOT count participation here. A tournament only becomes a completed
+  // tournament after its final result is recorded in finalize().
   names.forEach(n=>{
     if(!AT.players[n]) AT.players[n]={trophies:0,goals:0,matches:0,wins:0,draws:0,losses:0,tourneys:0};
-    AT.players[n].tourneys=(AT.players[n].tourneys||0)+1;
   });
   saveRemote(); goMain();
 }
@@ -2026,8 +2027,9 @@ function tournamentAwards(){
   const st=T.mode==='league'?standings():[];
   let champion=null,runner=null;
   if(T._fin){
-    if(T.mode==='league'){ champion=st[0]?.name; runner=st[1]?.name; }
-    else if(T.finalMatch&&T.finalMatch.homeScore!==null){
+    // In league mode the table leader is only the finalist/leader.
+    // The actual champion is determined by the Grand Final result.
+    if(T.finalMatch&&T.finalMatch.homeScore!==null){
       const h=T.players[T.finalMatch.p1idx]?.name,a=T.players[T.finalMatch.p2idx]?.name;
       champion=T.finalMatch.homeScore>T.finalMatch.awayScore?h:T.finalMatch.awayScore>T.finalMatch.homeScore?a:null;
       runner=champion===h?a:champion===a?h:null;
@@ -2129,6 +2131,17 @@ function normalizeTournamentData(){
   if(T.finalMatch){
     T.finalMatch.homeScore=normalizeScore(T.finalMatch.homeScore);
     T.finalMatch.awayScore=normalizeScore(T.finalMatch.awayScore);
+  }
+
+  // Backward compatibility for older Firebase data created before
+  // tournamentCount was introduced. Only completed tournaments count.
+  if(!AT || typeof AT!=='object') AT=emptyAllTime();
+  if(!AT.players || typeof AT.players!=='object') AT.players={};
+  if(!Array.isArray(AT.history)) AT.history=[];
+  if(!Number.isFinite(Number(AT.tournamentCount))){
+    // Legacy player `tourneys` counted tournaments when they were STARTED,
+    // so they cannot be used to determine completed tournaments.
+    AT.tournamentCount=AT.history.length;
   }
 }
 
@@ -2407,6 +2420,8 @@ function finalize(){
     playerStats:tournamentScores
   });
   if(AT.history.length>50) AT.history=AT.history.slice(0,50);
+  // Count a tournament only when it is actually finalized/completed.
+  AT.tournamentCount=(Number(AT.tournamentCount)||0)+1;
 }
 function unfinalize(){}
 
@@ -2598,7 +2613,8 @@ function renderAllTime(){
     el.innerHTML=`<div class="final-locked"><span class="lock">📊</span><p>No all-time data yet.<br>Complete tournaments to build records.</p></div>`;
     return;
   }
-  const tot=(AT.history||[]).length;
+  // Only finalized tournaments are counted. A reset/cancel never increments this.
+  const tot=Number(AT.tournamentCount)||0;
   const byT=[...entries].sort((a,b)=>(b[1].trophies||0)-(a[1].trophies||0));
   const byG=[...entries].sort((a,b)=>(b[1].goals||0)-(a[1].goals||0));
   const maxG=byG[0]?.[1]?.goals||1;
