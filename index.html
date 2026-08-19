@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1484,6 +1484,23 @@ main { max-width: 660px; margin: 0 auto; padding: 24px 16px 80px; position: rela
   </div>
 </div>
 
+<!-- CLEAR ALL PASS KEY -->
+<div class="modal-overlay" id="clear-all-pass-modal">
+  <div class="modal admin-login-modal">
+    <h3>🔐 Final Clear All Confirmation</h3>
+    <p>Only the administrator can continue. Enter the separate Clear All pass key to permanently erase all tournament and player data.</p>
+    <div class="admin-input-wrap">
+      <input type="password" id="clear-all-passkey" autocomplete="off" placeholder="Enter Clear All pass key" maxlength="100" onkeydown="if(event.key==='Enter') submitClearAllPasskey()">
+      <button type="button" class="admin-eye" onclick="toggleClearAllPasskey()" title="Show / hide pass key">◉</button>
+    </div>
+    <div id="clear-all-pass-error" class="admin-login-error"></div>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="closeClearAllPasskey()">Cancel</button>
+      <button class="modal-btn confirm" onclick="submitClearAllPasskey()">Clear Everything</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
@@ -1566,6 +1583,7 @@ function emptyAllTime(){
 ════════════════════════════════════════════════ */
 // Change this pass key before publishing the file.
 const ADMIN_PASSKEY = 'EFC-ADMIN-2026';
+const CLEAR_ALL_PASSKEY = 'clearall';
 let isAdmin = false;
 
 function restoreAdminSession(){
@@ -2826,12 +2844,57 @@ function confirmClearAll(){
   if(!requireAdmin('clear all tournament data')) return;
   openModal('Clear Everything?',
     'This permanently removes the current tournament, every saved player, all statistics, trophies, and tournament history. All values will return to 0 and all names will be removed.',
-    async()=>{
-      await clearEverythingNow();
+    ()=>{
       closeModal();
-      toast('✓ Everything cleared — all values are 0');
+      openClearAllPasskey();
     }
   );
+}
+
+function openClearAllPasskey(){
+  const modal=document.getElementById('clear-all-pass-modal');
+  const input=document.getElementById('clear-all-passkey');
+  const err=document.getElementById('clear-all-pass-error');
+  if(!modal) return;
+  if(err) err.textContent='';
+  if(input){
+    input.value='';
+    input.type='password';
+    setTimeout(()=>input.focus(),80);
+  }
+  modal.classList.add('open');
+}
+
+function closeClearAllPasskey(){
+  const modal=document.getElementById('clear-all-pass-modal');
+  if(modal) modal.classList.remove('open');
+}
+
+function toggleClearAllPasskey(){
+  const input=document.getElementById('clear-all-passkey');
+  if(input) input.type=input.type==='password'?'text':'password';
+}
+
+async function submitClearAllPasskey(){
+  if(!isAdmin){
+    closeClearAllPasskey();
+    requireAdmin('clear all tournament data');
+    return;
+  }
+
+  const input=document.getElementById('clear-all-passkey');
+  const err=document.getElementById('clear-all-pass-error');
+  const value=(input?.value||'').trim();
+
+  if(value!==CLEAR_ALL_PASSKEY){
+    if(err) err.textContent='Incorrect Clear All pass key.';
+    if(input){ input.focus(); input.select(); }
+    return;
+  }
+
+  closeClearAllPasskey();
+  await clearEverythingNow();
+  toast('✓ Everything cleared — all values are 0');
 }
 
 /* ════════════════════════════════════════════════
